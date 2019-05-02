@@ -59,7 +59,7 @@ var createScene = function () {
      vrHelper.displayGaze = true ;
      vrHelper.displayLaserPointer = true;
      vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
-     vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
+    // vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
      vrHelper.updategazetrackerscale = true;
      vrHelper.enableInteractions();
     
@@ -82,12 +82,12 @@ var createScene = function () {
     var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
     sphere.material = redMat;
 
-
+/*
     sphere.position.x = 1;
     sphere.position.y = 10;
     sphere.position.z = 10;  
    
-
+*/
    
    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
@@ -162,7 +162,7 @@ var createScene = function () {
     return scene;
 };
 
-/*
+
 var createScene1 = function()
     {
     var scene1 = new BABYLON.Scene(engine);
@@ -350,7 +350,7 @@ var createScene1 = function()
     }
 
 
-*/
+
 
 
 
