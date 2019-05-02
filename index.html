@@ -102,16 +102,19 @@
     rect1.linkOffsetY = -50;
    
    vrHelper.onNewMeshSelected.add((mesh)=>{
-       var scene1= createScene1();
+       vrHelper.onNewMeshPicked.add((mesh)=>{
+       sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+		var scene1= createScene1();
          engine.stopRenderLoop();
          engine.runRenderLoop(function(){
-                advancedTexture.dispose();
-                advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
-                scene1.render();
-             });
-        scene.autoclear = true;
-       // scene.dispose();
+         advancedTexture.dispose();
+        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
+         scene1.render();
+             })
+             scene.autoclear = true;
+        scene.dispose();
         scene = null;  
+    }));
     
 });
    
