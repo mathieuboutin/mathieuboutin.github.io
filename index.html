@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+        <title>Babylon.js sample code</title>
+
+        <!-- Babylon.js -->
+        <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+        <script src="https://preview.babylonjs.com/ammo.js"></script>
+        <script src="https://preview.babylonjs.com/cannon.js"></script>
+        <script src="https://preview.babylonjs.com/Oimo.js"></script>
+        <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
+        <script src="https://preview.babylonjs.com/earcut.min.js"></script>
+        <script src="https://preview.babylonjs.com/babylon.js"></script>
+        <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+
+        <style>
+            html, body {
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+
+            #renderCanvas {
+                width: 100%;
+                height: 100%;
+                touch-action: none;
+            }
+        </style>
+    </head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById("renderCanvas");
+
+      
+
+
+var createScene = function () {
+   
+   
+   var scene = new BABYLON.Scene(engine);
+    var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene);
+    camera.attachControl(canvas, true);
+    camera.inputs.attached.mousewheel.detachControl(canvas);
+       
+    var vrHelper = scene.createDefaultVRExperience();
+    
+     vrHelper.displayGaze = true ;
+     vrHelper.displayLaserPointer = true;
+     vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
+     vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
+     vrHelper.updategazetrackerscale = true;
+     vrHelper.enableInteractions();
+    
+     
+    var dome = new BABYLON.PhotoDome(
+        "testdome",
+        "./textures/360photo.jpg",
+        {
+            resolution: 32,
+            size: 1000
+        },
+        scene
+    );
+  
+    
+   var redMat = new BABYLON.StandardMaterial("red", scene);
+	redMat.diffuseColor = new BABYLON.Color3(255, 0, 0);
+	redMat.emissiveColor = new BABYLON.Color3(255, 0, 0);
+	redMat.specularColor = new BABYLON.Color3(255, 0, 0);
+    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
+    sphere.material = redMat;
+
+
+    sphere.position.x = 1;
+    sphere.position.y = 10;
+    sphere.position.z = 10;  
+   
+
+   
+   var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    var rect1 = new BABYLON.GUI.Rectangle();
+    rect1.width = 0.1;
+    rect1.height = "20px";
+    rect1.cornerRadius = 20;
+    rect1.color = "black";
+    rect1.thickness = 2;
+    rect1.background = "white";
+    advancedTexture.addControl(rect1);
+
+    var label = new BABYLON.GUI.TextBlock();
+    label.text = "Entrée";
+    rect1.addControl(label);
+
+    rect1.linkWithMesh(sphere);   
+    rect1.linkOffsetY = -50;
+   
+   
+   
+   
+    sphere.actionManager = new BABYLON.ActionManager(scene);
+	sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
+		
+        debut = new Date();
+        var redMat2 = new BABYLON.StandardMaterial("green", scene);
+	    redMat2.diffuseColor = new BABYLON.Color3(0, 255, 0);
+	    redMat2.emissiveColor = new BABYLON.Color3(0, 255, 0);
+	    redMat2.specularColor = new BABYLON.Color3(0, 255, 0);
+        sphere.material = redMat2;
+      /* while((current=new Date()).getTime() - debut.getTime() < 2000 )
+        {
+            
+            current = null;
+            
+        }
+        
+         var scene1= createScene1();
+         engine.stopRenderLoop();
+         engine.runRenderLoop(function(){
+         advancedTexture.dispose();
+        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
+         scene1.render();
+             })
+        scene.dispose();
+        scene = null;  */
+       
+       
+        
+        
+	}));
+
+    sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
+		
+    sphere.material = redMat;
+             
+    }));
+
+    sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickTrigger, function () {
+		var scene1= createScene1();
+         engine.stopRenderLoop();
+         engine.runRenderLoop(function(){
+         advancedTexture.dispose();
+        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
+         scene1.render();
+             })
+        scene.dispose();
+        scene = null;  
+    }));
+
+    return scene;
+};
+
+/*
+var createScene1 = function()
+    {
+    var scene1 = new BABYLON.Scene(engine);
+    var camera1 = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene1);
+    camera1.attachControl(canvas, true);
+    camera1.inputs.attached.mousewheel.detachControl(canvas);
+    var vrHelper = scene1.createDefaultVRExperience();
+    var dome1 = new BABYLON.PhotoDome(
+        "testdome",
+        "./textures/equirectangular.jpg",
+        {
+            resolution: 32,
+            size: 1000
+        },
+        scene1
+    );
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    var redMat1 = new BABYLON.StandardMaterial("red", scene1);
+	redMat1.diffuseColor = new BABYLON.Color3(255, 0, 0);
+	redMat1.emissiveColor = new BABYLON.Color3(255, 0, 0);
+	redMat1.specularColor = new BABYLON.Color3(255, 0, 0);
+    var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene1);
+    sphere1.material = redMat1;
+
+    
+    
+
+
+
+    sphere1.position.x = -1;
+    sphere1.position.y = 5;
+    sphere1.position.z = 5;  
+
+
+
+
+    var rect = new BABYLON.GUI.Rectangle();
+    rect.width = 0.1;
+    rect.height = "20px";
+    rect.cornerRadius = 20;
+    rect.color = "black";
+    rect.thickness = 2;
+    rect.background = "white";
+    advancedTexture.addControl(rect);
+
+    var label = new BABYLON.GUI.TextBlock();
+    label.text = "Vers photo 360";
+    rect.addControl(label);
+
+    rect.linkWithMesh(sphere1);   
+    rect.linkOffsetY = -50;
+
+
+    var redMat2 = new BABYLON.StandardMaterial("red", scene1);
+	redMat2.diffuseColor = new BABYLON.Color3(255, 0, 0);
+	redMat2.emissiveColor = new BABYLON.Color3(255, 0, 0);
+	redMat2.specularColor = new BABYLON.Color3(255, 0, 0);
+    var sphere2 = BABYLON.Mesh.CreateSphere("sphere2", 16, 1, scene1);
+    sphere2.material = redMat2;
+
+    sphere2.position.x = 1;
+    sphere2.position.y = 10;
+    sphere2.position.z = 10;  
+
+    var rect1 = new BABYLON.GUI.Rectangle();
+    rect1.width = 0.1;
+    rect1.height = "20px";
+    rect1.cornerRadius = 20;
+    rect1.color = "black";
+    rect1.thickness = 2;
+    rect1.background = "white";
+    advancedTexture.addControl(rect1);
+    var label1 = new BABYLON.GUI.TextBlock();
+    label1.text = "Vers Test";
+    rect1.addControl(label1);
+
+    rect1.linkWithMesh(sphere2);   
+    rect1.linkOffsetY = -50;
+
+
+    sphere1.actionManager = new BABYLON.ActionManager(scene1);
+	sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+		
+        var scene= createScene();
+         engine.stopRenderLoop();
+         engine.runRenderLoop(function(){
+                 advancedTexture.dispose();
+                 advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
+                 scene.render();
+             })
+         scene1.dispose();
+        scene1 = null;
+       
+	}));
+
+    sphere2.actionManager = new BABYLON.ActionManager(scene1);
+	sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+		
+        
+        var scene= createScene2();
+         engine.stopRenderLoop();
+         engine.runRenderLoop(function(){
+                 advancedTexture.dispose();
+                 advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
+                 scene.render();
+             })
+             scene1.dispose();
+        scene1 = null;
+        
+	}));
+    return scene1;
+    }
+
+
+    var createScene2 = function()
+    {
+    var scene1 = new BABYLON.Scene(engine);
+    var camera1 = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene1);
+    camera1.attachControl(canvas, true);
+    camera1.inputs.attached.mousewheel.detachControl(canvas);
+    var vrHelper = scene1.createDefaultVRExperience({useMultiview: true});
+    var dome1 = new BABYLON.PhotoDome(
+        "testdome",
+        "./textures/test.jpg",
+        {
+            resolution: 32,
+            size: 1000
+        },
+        scene1
+    );
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    var redMat1 = new BABYLON.StandardMaterial("red", scene1);
+	redMat1.diffuseColor = new BABYLON.Color3(255, 0, 0);
+	redMat1.emissiveColor = new BABYLON.Color3(255, 0, 0);
+	redMat1.specularColor = new BABYLON.Color3(255, 0, 0);
+    var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene1);
+    sphere1.material = redMat1;
+    
+   
+
+    sphere1.position.x = 1;
+    sphere1.position.y = 10;
+    sphere1.position.z = 10;  
+
+   
+
+    var rect = new BABYLON.GUI.Rectangle();
+    rect.width = 0.1;
+    rect.height = "20px";
+    rect.cornerRadius = 20;
+    rect.color = "black";
+    rect.thickness = 2;
+    rect.background = "white";
+    advancedTexture.addControl(rect);
+
+    var label1 = new BABYLON.GUI.TextBlock();
+    label1.text = "Sortie";
+    rect.addControl(label1);
+
+    rect.linkWithMesh(sphere1);   
+    rect.linkOffsetY = -50;
+
+
+    sphere1.actionManager = new BABYLON.ActionManager(scene1);
+	sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+		
+    
+        var scene= createScene();
+         engine.stopRenderLoop();
+         engine.runRenderLoop(function(){
+                 advancedTexture.dispose();
+                 advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
+                 scene.render();
+             })
+        scene1.dispose();
+        scene1 = null;
+        
+    
+	}));
+
+
+    return scene1;
+    }
+
+
+*/
+
+
+
+           
+        
+        
+        var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+        var scene = createScene();
+
+        engine.runRenderLoop(function () {
+            if (scene) {
+                scene.render();
+            }
+        });
+
+        // Resize
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>
