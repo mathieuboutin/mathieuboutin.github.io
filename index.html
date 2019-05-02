@@ -59,14 +59,14 @@
      vrHelper.displayGaze = true ;
      vrHelper.displayLaserPointer = true;
      vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
-     vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
-     vrHelper.updategazetrackerscale = true;
+     //vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
+     //vrHelper.updategazetrackerscale = true;
      vrHelper.enableInteractions();
     
      
     var dome = new BABYLON.PhotoDome(
         "testdome",
-        "./textures/360photo.jpg",
+        "./360photo.jpg",
         {
             resolution: 32,
             size: 1000
@@ -139,7 +139,7 @@ var createScene1 = function()
     var vrHelper = scene1.createDefaultVRExperience();
     var dome1 = new BABYLON.PhotoDome(
         "testdome",
-        "./textures/equirectangular.jpg",
+        "./equirectangular.jpg",
         {
             resolution: 32,
             size: 1000
@@ -256,7 +256,7 @@ var createScene1 = function()
     var vrHelper = scene1.createDefaultVRExperience({useMultiview: true});
     var dome1 = new BABYLON.PhotoDome(
         "testdome",
-        "./textures/test.jpg",
+        "./test.jpg",
         {
             resolution: 32,
             size: 1000
