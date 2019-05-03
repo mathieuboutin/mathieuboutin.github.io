@@ -99,30 +99,15 @@
 
 
      sphere.actionManager = new BABYLON.ActionManager(scene);
-
-   sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
-        
-      
-      vrHelper.onControllerMeshLoaded.add((webVRController)=>{
+vrHelper.onControllerMeshLoaded.add((webVRController)=>{
         var controllerMesh = webVRController.mesh;
         webVRController.onTriggerStateChangedObservable.add(()=>{
         // Trigger pressed event
         sphere.material = null;
 
     });
-});
-      /*
-        var scene1= createScene1();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-               advancedTexture.dispose();
-               advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
-               scene1.render();
-            });
-       scene.autoclear = true;
-      // scene.dispose();
-       scene = null; */
-   }));
+  
+      
       
       
       
