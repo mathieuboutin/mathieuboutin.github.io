@@ -65,6 +65,7 @@
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
+      vrHelper.webVRCamera.initControllers();
             //for VR
             scene.onBeforeRenderObservable.add(()=>{
                 //It has not worked yet.
@@ -75,6 +76,7 @@
             });
             vrHelper.onControllerMeshLoaded.add((webVRController)=>{
                 var controllerMesh = webVRController.mesh;
+                webVRController.onPadStateChangedObservable.add(() => {sphere.material = null;});
                 webVRController.onTriggerStateChangedObservable.add(()=>{
                    sphere.material = null;
                 });
