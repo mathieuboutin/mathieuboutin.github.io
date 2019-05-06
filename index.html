@@ -65,7 +65,7 @@
     greenMat.emissiveColor = new BABYLON.Color3(0, 255, 0);
     greenMat.specularColor = new BABYLON.Color3(0, 255, 0);
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
-   sphere.material = greenMat;
+   sphere.material = redMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -78,7 +78,7 @@
         gamepad.onButtonDownObservable.add((button, state)=>{
         //Button has been pressed
         gamepad.onControllerMeshLoaded.add((mesh) => {if (mesh.name.indexOf == "sphere1")
-        {sphere.material = redMat; }});
+        {sphere.material = greenMat; }});
             
         })});
             
