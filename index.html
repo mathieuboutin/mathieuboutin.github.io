@@ -65,7 +65,7 @@
     greenMat.emissiveColor = new BABYLON.Color3(0, 255, 0);
     greenMat.specularColor = new BABYLON.Color3(0, 255, 0);
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
-   sphere.material = greenMat;
+   sphere.material = redMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -73,14 +73,17 @@
         vrHelper.webVRCamera.initControllers();
      
        
+      sphere.actionManager = new BABYLON.ActionManager(scene);
+   sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
         var gamepadManager = new BABYLON.GamepadManager();
         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
         gamepad.onButtonDownObservable.add((button, state)=>{
         //Button has been pressed
-        gamepad.onControllerMeshLoaded.add((mesh) => {if (mesh.name == "sphere1")
-        {sphere.material = redMat; }});
-            
+        
+            sphere.material = greenMat;
+    
         })});
+    }));
             
             
         
