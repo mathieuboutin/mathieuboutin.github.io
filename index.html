@@ -77,7 +77,7 @@
         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
         gamepad.onButtonDownObservable.add((button, state)=>{
         //Button has been pressed
-        gamepad.onControllerMeshLoaded((mesh) => {if (mesh.name.indexOf == "sphere1")
+        gamepad.onControllerMeshLoaded.add((mesh) => {if (mesh.name.indexOf == "sphere1")
         {sphere.material = redMat; }});
             
         })});
