@@ -65,7 +65,17 @@
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
-      vrHelper.webVRCamera.initControllers();
+        
+        vrHelper.webVRCamera.initControllers();
+     
+        /*var gamepad = window.navigator.getGamepads();
+        gamepad.onControllerMeshLoaded*/
+        var gamepadManager = new BABYLON.GamepadManager();
+        gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
+        gamepad.onButtonDownObservable.add((button, state)=>{
+        //Button has been pressed
+            sphere.material = null;
+        })});
             //for VR
             scene.onBeforeRenderObservable.add(()=>{
                 //It has not worked yet.
