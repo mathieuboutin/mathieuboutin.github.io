@@ -44,51 +44,45 @@
    <script>
        var canvas = document.getElementById("renderCanvas");
 
-    var createScene = function () {
-    const renderCanvas = document.getElementById('renderCanvas');
-    renderCanvas.oncontextmenu = () => false;
-
-    var scene = new BABYLON.Scene(engine);
-    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
-    camera.setTarget(BABYLON.Vector3.Zero());
-    camera.attachControl(canvas, true);
-    var vrHelper = scene.createDefaultVRExperience();
-   
-    vrHelper.enableInteractions();
-     vrHelper.displayGaze = true;
-    
-    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-    light.intensity = 0.7;
-
-    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 2, scene);
-    sphere.position.y = 1;
-     var redMat = new BABYLON.StandardMaterial("red", scene);
+   var createScene = function () {
+            var scene = new BABYLON.Scene(engine);
+            var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.inputs.attached.mousewheel.detachControl(canvas);
+            
+            //for VR
+            var vrHelper = scene.createDefaultVRExperience();
+           vrHelper.enableInteractions();
+            var leftHand = BABYLON.Mesh.CreateBox("",0.1, scene)
+            leftHand.scaling.z = 2;
+            //
+           var redMat = new BABYLON.StandardMaterial("red", scene);
     redMat.diffuseColor = new BABYLON.Color3(255, 0, 0);
     redMat.emissiveColor = new BABYLON.Color3(255, 0, 0);
     redMat.specularColor = new BABYLON.Color3(255, 0, 0);
-    var logPointerEventTypes = function (type) {
-        if (type == BABYLON.PointerEventTypes.POINTERDOWN)
-            console.log("POINTERDOWN");
-        else if (type == BABYLON.PointerEventTypes.POINTERUP)
-            console.log("POINTERUP");
-        else if (type == BABYLON.PointerEventTypes.POINTERWHEEL)
-            console.log("POINTERWHEEL");
-        else if (type == BABYLON.PointerEventTypes.POINTERPICK)
-             sphere.material = redMat;
-        else if (type == BABYLON.PointerEventTypes.POINTERTAP)
-            sphere.material = redMat;
-            
-        else if (type == BABYLON.PointerEventTypes.POINTERDOUBLETAP)
-            sphere.material = redMat;
-    }
-
-    var _isPointerDown = false;
-    var _onPrePointerObservableObserver = scene.onPrePointerObservable.add(function (pointerInfoPre) {
-        logPointerEventTypes(pointerInfoPre.type);
-    });
-
-    return scene;
-};
+   var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
+   sphere.material = redMat;
+   sphere.position.x = 1;
+   sphere.position.y = 0;
+   sphere.position.z = 0; 
+            //for VR
+            scene.onBeforeRenderObservable.add(()=>{
+                //It has not worked yet.
+                if(vrHelper.webVRCamera.leftController){
+                    leftHand.position = vrHelper.webVRCamera.leftController.devicePosition.clone()
+                    leftHand.rotationQuaternion = vrHelper.webVRCamera.leftController.deviceRotationQuaternion.clone()
+                }
+            });
+            vrHelper.onControllerMeshLoaded.add((webVRController)=>{
+                var controllerMesh = webVRController.mesh;
+                webVRController.onTriggerStateChangedObservable.add(()=>{
+                   sphere.material = null;
+                });
+            });
+            //
+        
+            return scene;
+        };
 
        
 
