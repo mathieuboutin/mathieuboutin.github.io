@@ -68,30 +68,15 @@
         
         vrHelper.webVRCamera.initControllers();
      
-        /*var gamepad = window.navigator.getGamepads();
-        gamepad.onControllerMeshLoaded*/
-       /* var gamepadManager = new BABYLON.GamepadManager();
+       
+        var gamepadManager = new BABYLON.GamepadManager();
         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
         gamepad.onButtonDownObservable.add((button, state)=>{
         //Button has been pressed
             sphere.material = null;
-        })});*/
-            //for VR
-            scene.onBeforeRenderObservable.add(()=>{
-                //It has not worked yet.
-                if(vrHelper.webVRCamera.leftController){
-                    leftHand.position = vrHelper.webVRCamera.leftController.devicePosition.clone()
-                    leftHand.rotationQuaternion = vrHelper.webVRCamera.leftController.deviceRotationQuaternion.clone()
-                }
-            });
-            vrHelper.onControllerMeshLoaded.add((webVRController)=>{
-                var controllerMesh = webVRController.mesh;
-                webVRController.onPadStateChangedObservable.add(() => {sphere.material = null;});
-                webVRController.onTriggerStateChangedObservable.add(()=>{
-                   sphere.material = null;
-                });
-            });
-            //
+        })});
+            
+            
         
             return scene;
         };
