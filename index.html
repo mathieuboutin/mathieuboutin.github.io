@@ -44,7 +44,7 @@
    <script>
        var canvas = document.getElementById("renderCanvas");
 
-      var timer;
+       var timer;
 
     var createScene = function () {
  
@@ -59,14 +59,14 @@
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
     vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
-   vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
-   vrHelper.updategazetrackerscale = true;
+   /*vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
+   vrHelper.updategazetrackerscale = true;*/
     vrHelper.enableInteractions();
   
    
    var dome = new BABYLON.PhotoDome(
        "testdome",
-       "./360photo.jpg",
+       "./textures/360photo.jpg",
        {
            resolution: 32,
            size: 1000
@@ -132,7 +132,7 @@
    },2000);
   
 });
- 
+ sphere.actionManager = new BABYLON.ActionManager(scene);
     
  sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
         var gamepadManager = new BABYLON.GamepadManager();
@@ -152,7 +152,7 @@
     
         })});
     }));
-   sphere.actionManager = new BABYLON.ActionManager(scene);
+   
    sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
         var greenMat = new BABYLON.StandardMaterial("green", scene);
         greenMat.diffuseColor = new BABYLON.Color3(0, 255, 0);
@@ -222,7 +222,7 @@ var createScene1 = function()
     vrHelper.enableInteractions();
    var dome1 = new BABYLON.PhotoDome(
        "testdome",
-       "./equirectangular.jpg",
+       "./textures/equirectangular.jpg",
        {
            resolution: 32,
            size: 1000
@@ -423,7 +423,7 @@ var createScene1 = function()
    vrHelper.enableInteractions();
    var dome1 = new BABYLON.PhotoDome(
        "testdome",
-       "./test.jpg",
+       "./textures/test.jpg",
        {
            resolution: 32,
            size: 1000
