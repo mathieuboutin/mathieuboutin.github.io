@@ -45,7 +45,7 @@
        var canvas = document.getElementById("renderCanvas");
 
        var timer;
-
+      var gamepadManager = new BABYLON.GamepadManager();
     var createScene = function () {
  
  
@@ -139,7 +139,7 @@
   
 });
  sphere.actionManager = new BABYLON.ActionManager(scene);
-     var gamepadManager = new BABYLON.GamepadManager();
+     
  sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
        
         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
