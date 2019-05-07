@@ -75,9 +75,9 @@
    );
    
   var redMat = new BABYLON.StandardMaterial("red", scene);
-    redMat.diffuseColor = new BABYLON.Color3(255, 0, 0);
-    redMat.emissiveColor = new BABYLON.Color3(255, 0, 0);
-    redMat.specularColor = new BABYLON.Color3(255, 0, 0);
+    redMat.diffuseColor = new BABYLON.Color3(255,255, 0);
+    redMat.emissiveColor = new BABYLON.Color3(255, 255, 0);
+    redMat.specularColor = new BABYLON.Color3(255, 255, 0);
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
    sphere.material = redMat;
    sphere.position.x = 1;
@@ -250,8 +250,7 @@ plane.isVisible = false;
     plane.actionManager = new BABYLON.ActionManager(scene); 
     var playing = false;
     plane.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
-        gamepad.onButtonDownObservable.add((button, state)=>{
+        
         
         if(playing)
         {
@@ -263,7 +262,7 @@ plane.isVisible = false;
             videoTexture.video.pause();
             playing = !playing;
         }
-     })});
+     
     }));
         show = !show;
         }
@@ -274,7 +273,7 @@ plane.isVisible = false;
 
           
         }
-	gamepadManager.dispose();
+	//gamepadManager.dispose();
 
       })});
    return scene;
