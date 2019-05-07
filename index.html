@@ -85,7 +85,7 @@
         greenMat.specularColor = new BABYLON.Color3(0, 255, 0);
        
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
-   sphere.material = greenMat;
+   sphere.material = redMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -106,7 +106,7 @@
    rect1.linkWithMesh(sphere);  
    rect1.linkOffsetY = -50;
  
- 
+ /*
    vrHelper.raySelectionPredicate = (mesh) => {
               if (mesh.name.indexOf("sphere1") !== -1) {
                   return true;
@@ -120,8 +120,8 @@
               }
               return false;
           };
- 
- 
+ */
+ /*
     vrHelper.onNewMeshSelected.add((mesh)=>{
        timer = setTimeout( function(){
       
@@ -137,7 +137,7 @@
        scene = null; 
    },2000);
   
-});
+});*/
  sphere.actionManager = new BABYLON.ActionManager(scene);
      
  sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
@@ -186,7 +186,7 @@
       
       
     }));*/
-
+/*
     sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
         
         clearTimeout(timer)
@@ -205,7 +205,7 @@
             scene.autoclear = true;
        scene.dispose();
        scene = null; 
-   }));
+   }));*/
   
    
    return scene;
@@ -222,7 +222,7 @@ var createScene1 = function()
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
-    //vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
+    vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
    // vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
     //vrHelper.updategazetrackerscale = true;
     vrHelper.enableInteractions();
