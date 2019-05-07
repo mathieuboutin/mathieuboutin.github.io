@@ -45,9 +45,8 @@
        var canvas = document.getElementById("renderCanvas");
 
        var timer;
-      var gamepadManager = new BABYLON.GamepadManager();
-     
-    var createScene = function () {
+      
+ var createScene = function () {
  
  
   var scene = new BABYLON.Scene(engine);
@@ -55,7 +54,7 @@
    camera.attachControl(canvas, true);
    camera.inputs.attached.mousewheel.detachControl(canvas);
      
-  var  vrHelper = scene.createDefaultVRExperience();
+   var vrHelper = scene.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
@@ -67,7 +66,7 @@
    
    var dome = new BABYLON.PhotoDome(
        "testdome",
-       "./360photo.jpg",
+       "./textures/360photo.jpg",
        {
            resolution: 32,
            size: 1000
@@ -79,14 +78,8 @@
     redMat.diffuseColor = new BABYLON.Color3(255, 0, 0);
     redMat.emissiveColor = new BABYLON.Color3(255, 0, 0);
     redMat.specularColor = new BABYLON.Color3(255, 0, 0);
-       
-       var greenMat = new BABYLON.StandardMaterial("green", scene);
-        greenMat.diffuseColor = new BABYLON.Color3(0, 255, 0);
-        greenMat.emissiveColor = new BABYLON.Color3(0, 255, 0);
-        greenMat.specularColor = new BABYLON.Color3(0, 255, 0);
-       
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
-   sphere.material = greenMat;
+   sphere.material = redMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -107,426 +100,127 @@
    rect1.linkWithMesh(sphere);  
    rect1.linkOffsetY = -50;
  
- /*
-   vrHelper.raySelectionPredicate = (mesh) => {
-              if (mesh.name.indexOf("sphere1") !== -1) {
-                  return true;
-              }
-              return false;
-          };
-          // Only fire onNewMeshSelected event if the selected mesh's name contains Flags01 (eg. only one of the flags)
-          vrHelper.meshSelectionPredicate = (mesh) => {
-              if (mesh.name.indexOf("sphere1") !== -1) {
-                  return true;
-              }
-              return false;
-          };
- */
- /*
-    vrHelper.onNewMeshSelected.add((mesh)=>{
-       timer = setTimeout( function(){
-      
-            var scene1= createScene1();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-               advancedTexture.dispose();
-               advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
-               scene1.render();
-            });
-       scene.autoclear = true;
-       scene.dispose();
-       scene = null; 
-   },2000);
+   
   
-});*/
- sphere.actionManager = new BABYLON.ActionManager(scene);
+   /*------------------------------VIDEO------------------------------------*/
+
+  
+var plane = BABYLON.Mesh.CreatePlane("plane1", 2, scene);
+plane.isVisible = false;
+     sphere.actionManager = new BABYLON.ActionManager(scene);
+    var show = true;
+     sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+        
+        if(show)
+        {
+            plane.isVisible = true;
+         var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 0.7;
+	
+    // Create a material from the video
+	var mat = new BABYLON.StandardMaterial("mat", scene);
+	var videoTexture = new BABYLON.VideoTexture("video", ["textures/babylonjs.mp4", "textures/babylonjs.webm"], scene, true, false,);
+	mat.diffuseTexture = videoTexture;
+   
+    // Attach the video material the a mesh
+    
+    plane.scaling.x = 1920/1080; // set aspect ratio
+    plane.position.x = 1;
+    plane.position.y = 2; 
+    plane.position.z = 0;
+	plane.material = mat;
+	
+    // Access video for play/pause
+    plane.actionManager = new BABYLON.ActionManager(scene); 
+    var playing = false;
+    plane.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+        if(playing)
+        {
+       videoTexture.video.play();
+       playing = !playing;
+        }
+        else
+        {
+            videoTexture.video.pause();
+            playing = !playing;
+        }
      
-     sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
-       
+    }));
+        show = !show;
+        }
+        else 
+        {
+            show = !show;
+            plane.dispose()
+
+          
+        }
+
+
+   
+   }));
+  
+    sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
+         var gamepadManager = new BABYLON.GamepadManager();
         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
         gamepad.onButtonDownObservable.add((button, state)=>{
-        //Button has been pressed
-        var scene1= createScene1();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-               advancedTexture.dispose();
-               advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
-               scene1.render();
-            });
-       //scene.autoclear = true;
-       scene.dispose();
-       //scene = null; 
+        
     
-        })});
+     
+        if(show)
+        {
+            plane.isVisible = true;
+         var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 0.7;
+	
+    // Create a material from the video
+	var mat = new BABYLON.StandardMaterial("mat", scene);
+	var videoTexture = new BABYLON.VideoTexture("video", ["textures/babylonjs.mp4", "textures/babylonjs.webm"], scene, true, false,);
+	mat.diffuseTexture = videoTexture;
+   
+    // Attach the video material the a mesh
+    
+    plane.scaling.x = 1920/1080; // set aspect ratio
+    plane.position.x = 1;
+    plane.position.y = 2; 
+    plane.position.z = 0;
+	plane.material = mat;
+	
+    // Access video for play/pause
+    plane.actionManager = new BABYLON.ActionManager(scene); 
+    var playing = false;
+    plane.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
+        gamepad.onButtonDownObservable.add((button, state)=>{
+        
+        if(playing)
+        {
+       videoTexture.video.play();
+       playing = !playing;
+        }
+        else
+        {
+            videoTexture.video.pause();
+            playing = !playing;
+        }
+     })});
     }));
-   
-   /*sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
-        var greenMat = new BABYLON.StandardMaterial("green", scene);
-        greenMat.diffuseColor = new BABYLON.Color3(0, 255, 0);
-        greenMat.emissiveColor = new BABYLON.Color3(0, 255, 0);
-        greenMat.specularColor = new BABYLON.Color3(0, 255, 0);
-        sphere.material = greenMat;
-        timer = setTimeout( function(){
-      
-            var scene1= createScene1();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-               advancedTexture.dispose();
-               advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
-               scene1.render();
-            });
-       scene.autoclear = true;
-       scene.dispose();
-       scene = null; 
-   },2000);
-   
-      
-        
-     
-     
-      
-      
-    }));*/
-/*
-    sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
-        
-        clearTimeout(timer)
-        sphere.material = redMat;
-        
-       }));   
-     
-   sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-        var scene1= createScene1();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-        advancedTexture.dispose();
-       advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
-        scene1.render();
-            })
-            scene.autoclear = true;
-       scene.dispose();
-       scene = null; 
-   }));*/
-  
-   
+        show = !show;
+        }
+        else 
+        {
+            show = !show;
+            plane.dispose()
+
+          
+        }
+
+
+      })});
+   }));
+
    return scene;
 };
-
-
-var createScene1 = function()
-   {
-   var scene1 = new BABYLON.Scene(engine);
-   var camera1 = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene1);
-   camera1.attachControl(canvas, true);
-   camera1.inputs.attached.mousewheel.detachControl(canvas);
-   vrHelper = scene.createDefaultVRExperience();
-  
-    vrHelper.displayGaze = true ;
-    vrHelper.displayLaserPointer = true;
-    vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
-   // vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
-    //vrHelper.updategazetrackerscale = true;
-    vrHelper.enableInteractions();
-   var dome1 = new BABYLON.PhotoDome(
-       "testdome",
-       "./equirectangular.jpg",
-       {
-           resolution: 32,
-           size: 1000
-       },
-       scene1
-   );
-   var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-   var redMat1 = new BABYLON.StandardMaterial("red", scene1);
-    redMat1.diffuseColor = new BABYLON.Color3(255, 0, 0);
-    redMat1.emissiveColor = new BABYLON.Color3(255, 0, 0);
-    redMat1.specularColor = new BABYLON.Color3(255, 0, 0);
-   var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene1);
-   sphere1.material = redMat1;
-  
-  
-   sphere1.position.x = -1;
-   sphere1.position.y = 0;
-   sphere1.position.z = 0; 
-   var rect = new BABYLON.GUI.Rectangle();
-   rect.width = 0.1;
-   rect.height = "20px";
-   rect.cornerRadius = 20;
-   rect.color = "black";
-   rect.thickness = 2;
-   rect.background = "white";
-   advancedTexture.addControl(rect);
-   var label = new BABYLON.GUI.TextBlock();
-   label.text = "Vers photo 360";
-   rect.addControl(label);
-   rect.linkWithMesh(sphere1);  
-   rect.linkOffsetY = -50;
-   var redMat2 = new BABYLON.StandardMaterial("red", scene1);
-    redMat2.diffuseColor = new BABYLON.Color3(255, 0, 0);
-    redMat2.emissiveColor = new BABYLON.Color3(255, 0, 0);
-    redMat2.specularColor = new BABYLON.Color3(255, 0, 0);
-   var sphere2 = BABYLON.Mesh.CreateSphere("sphere2", 16, 1, scene1);
-   sphere2.material = redMat2;
-   sphere2.position.x = 1;
-   sphere2.position.y = 0;
-   sphere2.position.z = 0; 
-   var rect1 = new BABYLON.GUI.Rectangle();
-   rect1.width = 0.1;
-   rect1.height = "20px";
-   rect1.cornerRadius = 20;
-   rect1.color = "black";
-   rect1.thickness = 2;
-   rect1.background = "white";
-   advancedTexture.addControl(rect1);
-   var label1 = new BABYLON.GUI.TextBlock();
-   label1.text = "Vers Test";
-   rect1.addControl(label1);
-   rect1.linkWithMesh(sphere2);  
-   rect1.linkOffsetY = -50;
-   sphere1.actionManager = new BABYLON.ActionManager(scene1);
-    sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-        
-       var scene= createScene();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-                advancedTexture.dispose();
-                advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-                scene.render();
-            })
-            scene1.autoclear = true;
-        scene1.dispose();
-       scene1 = null;
-     
-    }));
-
-    sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
-        var gamepadManager = new BABYLON.GamepadManager();
-        gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
-        gamepad.onButtonDownObservable.add((button, state)=>{
-        //Button has been pressed
-        var scene= createScene();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-               advancedTexture.dispose();
-               advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-               scene.render();
-            });
-       scene1.autoclear = true;
-       scene1.dispose();
-       scene1 = null; 
-    
-        })});
-    }));
-
-
-   sphere2.actionManager = new BABYLON.ActionManager(scene1);
-
-   sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
-        var gamepadManager = new BABYLON.GamepadManager();
-        gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
-        gamepad.onButtonDownObservable.add((button, state)=>{
-        //Button has been pressed
-        var scene= createScene2();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-               advancedTexture.dispose();
-               advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-               scene.render();
-            });
-       scene1.autoclear = true;
-       scene1.dispose();
-       scene1 = null; 
-    
-        })});
-    }));
-
-
-    sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-        
-      
-       var scene= createScene2();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-                advancedTexture.dispose();
-                advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-                scene.render();
-            })
-            scene1.autoclear = true;
-            scene1.dispose();
-       scene1 = null;
-      
-    }));
-  
-   /*
-   sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
-        
-       debut = new Date();
-    
-      while((current=new Date()).getTime() - debut.getTime() < 2000 )
-       {
-          
-           current = null;
-          
-       }
-      
-        var scene= createScene();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-        advancedTexture.dispose();
-       advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-        scene.render();
-            })
-       scene1.autoclear = true;
-      // scene1.dispose();
-       scene1 = null; 
-     
-     
-      
-      
-    }));
-   sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
-        
-       debut = new Date();
-    
-      while((current=new Date()).getTime() - debut.getTime() < 2000 )
-       {
-          
-           current = null;
-          
-       }
-      
-        var scene= createScene2();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-        advancedTexture.dispose();
-       advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-        scene.render();
-            })
-       scene1.autoclear = true;
-       scene1.dispose();
-       scene1 = null; 
-     
-     
-      
-      
-    }));*/
-   return scene1;
-   }
-
-
-   var createScene2 = function()
-   {
-   var scene1 = new BABYLON.Scene(engine);
-   var camera1 = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene1);
-   camera1.attachControl(canvas, true);
-   camera1.inputs.attached.mousewheel.detachControl(canvas);
-   var vrHelper = scene.createDefaultVRExperience();
-  
-   vrHelper.displayGaze = true ;
-   vrHelper.displayLaserPointer = true;
-   //vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
-  // vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
-   //vrHelper.updategazetrackerscale = true;
-   vrHelper.enableInteractions();
-   var dome1 = new BABYLON.PhotoDome(
-       "testdome",
-       "./test.jpg",
-       {
-           resolution: 32,
-           size: 1000
-       },
-       scene1
-   );
-   var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-   var redMat1 = new BABYLON.StandardMaterial("red", scene1);
-    redMat1.diffuseColor = new BABYLON.Color3(255, 0, 0);
-    redMat1.emissiveColor = new BABYLON.Color3(255, 0, 0);
-    redMat1.specularColor = new BABYLON.Color3(255, 0, 0);
-   var sphere1 = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene1);
-   sphere1.material = redMat1;
-  
- 
-   sphere1.position.x = 1;
-   sphere1.position.y = 0;
-   sphere1.position.z = 0; 
- 
-   var rect = new BABYLON.GUI.Rectangle();
-   rect.width = 0.1;
-   rect.height = "20px";
-   rect.cornerRadius = 20;
-   rect.color = "black";
-   rect.thickness = 2;
-   rect.background = "white";
-   advancedTexture.addControl(rect);
-   var label1 = new BABYLON.GUI.TextBlock();
-   label1.text = "Sortie";
-   rect.addControl(label1);
-   rect.linkWithMesh(sphere1);  
-   rect.linkOffsetY = -50;
-   sphere1.actionManager = new BABYLON.ActionManager(scene1);
-    sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-        
-  
-       var scene= createScene();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-                advancedTexture.dispose();
-                advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-                scene.render();
-            })
-       scene1.autoclear = true;
-       scene1.dispose();
-       scene1 = null;
-      
-  
-    }));
-    sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
-        var gamepadManager = new BABYLON.GamepadManager();
-        gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
-        gamepad.onButtonDownObservable.add((button, state)=>{
-        //Button has been pressed
-        var scene= createScene1();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-               advancedTexture.dispose();
-               advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-               scene.render();
-            });
-       scene1.autoclear = true;
-       scene1.dispose();
-       scene1 = null; 
-    
-        })});
-    }));
-   /*sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
-        
-       debut = new Date();
-    
-      while((current=new Date()).getTime() - debut.getTime() < 2000 )
-       {
-          
-           current = null;
-          
-       }
-      
-        var scene= createScene1();
-        engine.stopRenderLoop();
-        engine.runRenderLoop(function(){
-        advancedTexture.dispose();
-       advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene);
-        scene.render();
-            })
-       scene1.autoclear = true;
-       scene1.dispose();
-       scene1 = null; 
-     
-     
-      
-      
-    }));*/
-   return scene1;
-   }
-
 
        
 
