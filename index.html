@@ -162,11 +162,11 @@ var createScene1 = function()
    camera1.attachControl(canvas, true);
    camera1.inputs.attached.mousewheel.detachControl(canvas);
    
-     /*var vrHelper = scene1.createDefaultVRExperience();
+     var vrHelper = scene1.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
-    vrHelper.enableInteractions();*/
+    vrHelper.enableInteractions();
    var dome1 = new BABYLON.PhotoDome(
        "testdome",
        "./equirectangular.jpg",
