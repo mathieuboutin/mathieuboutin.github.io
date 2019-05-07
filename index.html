@@ -119,7 +119,7 @@ plane.isVisible = false;
 	
     // Create a material from the video
 	var mat = new BABYLON.StandardMaterial("mat", scene);
-	var videoTexture = new BABYLON.VideoTexture("video", ["textures/babylonjs.mp4", "textures/babylonjs.webm"], scene, true, false,);
+	var videoTexture = new BABYLON.VideoTexture("video", ["./babylonjs.mp4"], scene, true, false,);
 	mat.diffuseTexture = videoTexture;
    
     // Attach the video material the a mesh
@@ -175,7 +175,7 @@ plane.isVisible = false;
 	
     // Create a material from the video
 	var mat = new BABYLON.StandardMaterial("mat", scene);
-	var videoTexture = new BABYLON.VideoTexture("video", ["textures/babylonjs.mp4", "textures/babylonjs.webm"], scene, true, false,);
+	var videoTexture = new BABYLON.VideoTexture("video", ["./babylonjs.mp4"], scene, true, false,);
 	mat.diffuseTexture = videoTexture;
    
     // Attach the video material the a mesh
