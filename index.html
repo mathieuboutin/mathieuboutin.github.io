@@ -89,7 +89,7 @@
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
    
    // positionnement de la sphère
-   sphere.material = redMat;
+   sphere.material = greenMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -133,16 +133,16 @@
                advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
                scene1.render();
             });
-       scene.autoclear = true;
+      
        scene.dispose();
-       scene = null; 
+      // scene = null; 
    },2000);
       
     }));
 
     sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
         
-        clearTimeout(timer)
+        //clearTimeout(timer)
         sphere.material = redMat;
         rect1.isVisible = false;
         
