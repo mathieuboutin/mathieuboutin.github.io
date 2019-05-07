@@ -162,9 +162,6 @@ var createScene1 = function()
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
-    //vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
-   // vrHelper.gazeTrackerMesh = BABYLON.Mesh.CreateSphere("sphere1", 16, 0.05, scene);
-    //vrHelper.updategazetrackerscale = true;
     vrHelper.enableInteractions();
    var dome1 = new BABYLON.PhotoDome(
        "testdome",
@@ -186,7 +183,7 @@ var createScene1 = function()
   
    sphere1.position.x = -1;
    sphere1.position.y = 0;
-   sphere1.position.z = 0; 
+   sphere1.position.z = 5; 
    var rect = new BABYLON.GUI.Rectangle();
    rect.width = 0.1;
    rect.height = "20px";
@@ -208,7 +205,7 @@ var createScene1 = function()
    sphere2.material = redMat2;
    sphere2.position.x = 1;
    sphere2.position.y = 0;
-   sphere2.position.z = 0; 
+   sphere2.position.z = 5; 
    var rect1 = new BABYLON.GUI.Rectangle();
    rect1.width = 0.1;
    rect1.height = "20px";
