@@ -139,9 +139,9 @@
   
 });
  sphere.actionManager = new BABYLON.ActionManager(scene);
-    
+     var gamepadManager = new BABYLON.GamepadManager();
  sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
-        var gamepadManager = new BABYLON.GamepadManager();
+       
         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
         gamepad.onButtonDownObservable.add((button, state)=>{
         //Button has been pressed
