@@ -89,7 +89,7 @@
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
    
    // positionnement de la sphère
-   sphere.material = greenMat;
+   sphere.material = redMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -134,7 +134,7 @@
                scene1.render();
             });
       
-       scene.dispose();
+       //scene.dispose();
       // scene = null; 
    },2000);
       
@@ -142,7 +142,7 @@
 
     sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
         
-        //clearTimeout(timer)
+        clearTimeout(timer)
         sphere.material = redMat;
         rect1.isVisible = false;
         
