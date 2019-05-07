@@ -47,7 +47,7 @@
     
 
    var timer;
-var vrHelper;
+
 
     var createScene = function () {
  
@@ -60,7 +60,7 @@ var vrHelper;
 
    /*---------Ajout de la VR-------------------*/     
 
-    vrHelper = scene.createDefaultVRExperience();
+    var vrHelper = scene.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
@@ -161,11 +161,12 @@ var createScene1 = function()
    var camera1 = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene1);
    camera1.attachControl(canvas, true);
    camera1.inputs.attached.mousewheel.detachControl(canvas);
-   vrHelper = scene1.createDefaultVRExperience();
+   
+     /*var vrHelper = scene1.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
-    vrHelper.enableInteractions();
+    vrHelper.enableInteractions();*/
    var dome1 = new BABYLON.PhotoDome(
        "testdome",
        "./equirectangular.jpg",
