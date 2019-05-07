@@ -141,11 +141,11 @@
 });*/
  sphere.actionManager = new BABYLON.ActionManager(scene);
      
- sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
-       
+    
         gamepadManager.onGamepadConnectedObservable.add((gamepad, state)=>{
         gamepad.onButtonDownObservable.add((button, state)=>{
         //Button has been pressed
+        sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function (mesh) {
         var scene1= createScene1();
         engine.stopRenderLoop();
         engine.runRenderLoop(function(){
@@ -157,8 +157,10 @@
        scene.dispose();
        //scene = null; 
     
-        })});
-    }));
+        }));
+        });
+        });
+ 
    
    /*sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
         var greenMat = new BABYLON.StandardMaterial("green", scene);
