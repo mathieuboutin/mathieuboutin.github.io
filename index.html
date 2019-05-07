@@ -46,6 +46,9 @@
 
      var timer;
 
+   var timer;
+var vrHelper;
+
     var createScene = function () {
  
    /*------ Initialisation Scène & Camera ------*/     
@@ -57,7 +60,7 @@
 
    /*---------Ajout de la VR-------------------*/     
 
-   var vrHelper = scene.createDefaultVRExperience();
+    vrHelper = scene.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
@@ -67,14 +70,14 @@
    /*--------- Chargement de la photo 360°--------------*/
    var dome = new BABYLON.PhotoDome(
        "testdome",
-       "./360photo.jpg",
+       "./textures/360photo.jpg",
        {
            resolution: 32,
            size: 1000
        },
        scene
    );
-   
+
 
    /*----------------------Création Sphère & matériaux--------*/
     var greenMat = new BABYLON.StandardMaterial("green", scene);
@@ -89,7 +92,7 @@
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
    
    // positionnement de la sphère
-   sphere.material = redMat;
+   sphere.material = greenMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -133,9 +136,9 @@
                advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI", true, scene1);
                scene1.render();
             });
-      
-       //scene.dispose();
-      // scene = null; 
+       scene.autoclear = true;
+       scene.dispose();
+       scene = null; 
    },2000);
       
     }));
@@ -158,14 +161,14 @@ var createScene1 = function()
    var camera1 = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene1);
    camera1.attachControl(canvas, true);
    camera1.inputs.attached.mousewheel.detachControl(canvas);
-   var vrHelper = scene.createDefaultVRExperience();
+   vrHelper = scene.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
     vrHelper.enableInteractions();
    var dome1 = new BABYLON.PhotoDome(
        "testdome",
-       "./equirectangular.jpg",
+       "./textures/equirectangular.jpg",
        {
            resolution: 32,
            size: 1000
@@ -183,7 +186,7 @@ var createScene1 = function()
   
    sphere1.position.x = -1;
    sphere1.position.y = 0;
-   sphere1.position.z = 5; 
+   sphere1.position.z = 0; 
    var rect = new BABYLON.GUI.Rectangle();
    rect.width = 0.1;
    rect.height = "20px";
@@ -205,7 +208,7 @@ var createScene1 = function()
    sphere2.material = redMat2;
    sphere2.position.x = 1;
    sphere2.position.y = 0;
-   sphere2.position.z = 5; 
+   sphere2.position.z = 0; 
    var rect1 = new BABYLON.GUI.Rectangle();
    rect1.width = 0.1;
    rect1.height = "20px";
@@ -331,6 +334,7 @@ var createScene1 = function()
     }));*/
    return scene1;
    }
+ 
        
 
 
