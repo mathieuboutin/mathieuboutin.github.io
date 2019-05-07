@@ -46,6 +46,7 @@
 
        var timer;
       var gamepadManager = new BABYLON.GamepadManager();
+      var vrHelper;
     var createScene = function () {
  
  
@@ -54,7 +55,7 @@
    camera.attachControl(canvas, true);
    camera.inputs.attached.mousewheel.detachControl(canvas);
      
-   var vrHelper = scene.createDefaultVRExperience();
+   vrHelper = scene.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
@@ -85,7 +86,7 @@
         greenMat.specularColor = new BABYLON.Color3(0, 255, 0);
        
    var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
-   sphere.material = redMat;
+   sphere.material = greenMat;
    sphere.position.x = 1;
    sphere.position.y = 0;
    sphere.position.z = 0; 
@@ -218,7 +219,7 @@ var createScene1 = function()
    var camera1 = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene1);
    camera1.attachControl(canvas, true);
    camera1.inputs.attached.mousewheel.detachControl(canvas);
-   var vrHelper = scene.createDefaultVRExperience();
+   vrHelper = scene.createDefaultVRExperience();
   
     vrHelper.displayGaze = true ;
     vrHelper.displayLaserPointer = true;
