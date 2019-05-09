@@ -309,12 +309,12 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     // Let's add a button
     var button = new BABYLON.GUI.HolographicButton("restart");
     manager.addControl(button);
-    button.imageUrl="./textures/rest.jpg";
+    
     button.position.x = 2.5;
     button.position.y = 1.5;
     button.scaling.x = 0.5;
     button.scaling.y = 0.5;
-   var image = new BABYLON.GUI.Image("reset", "./textures/rest.jpg");
+   var image = new BABYLON.GUI.Image("reset", "./textures/reset.jpg");
 image.stretch = BABYLON.GUI.Image.STRETCH_FILL;
 button.content = image;
     button.onPointerUpObservable.add(function(){
