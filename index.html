@@ -45,15 +45,19 @@
        var canvas = document.getElementById("renderCanvas");
 
     
-
-    var timer;
+ var timer;
  var timerclick;
  var timervideo;
+ var timerButton;
+
+var greenMat, redMat;
+var scene, vrHelper;
+var planChargement;
 
 var createScene = function () {
 
 /*------ Initialisation Scène & Camera ------*/     
-var scene = new BABYLON.Scene(engine);
+scene = new BABYLON.Scene(engine);
 var camera = new BABYLON.ArcRotateCamera("Camera", -Math.PI / 2,  Math.PI / 2, 5, BABYLON.Vector3.Zero(), scene);
 camera.attachControl(canvas, true);
 camera.inputs.attached.mousewheel.detachControl(canvas);
@@ -61,31 +65,51 @@ camera.inputs.attached.mousewheel.detachControl(canvas);
 
 /*---------Ajout de la VR-------------------*/     
 
-var vrHelper = scene.createDefaultVRExperience();
+ vrHelper = scene.createDefaultVRExperience();
 
 vrHelper.displayGaze = true ;
 vrHelper.displayLaserPointer = true;
 vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
 vrHelper.enableInteractions();
 /*-------- Création Matériaux---------------*/
-var greenMat = new BABYLON.StandardMaterial("green", scene);
+ greenMat = new BABYLON.StandardMaterial("green", scene);
     greenMat.diffuseColor = new BABYLON.Color3(0, 255, 0);
     greenMat.emissiveColor = new BABYLON.Color3(0, 255, 0);
     greenMat.specularColor = new BABYLON.Color3(0, 255, 0);
 
-var redMat = new BABYLON.StandardMaterial("red", scene);
+ redMat = new BABYLON.StandardMaterial("red", scene);
     redMat.diffuseColor = new BABYLON.Color3(255, 0, 0);
     redMat.emissiveColor = new BABYLON.Color3(255, 0, 0);
     redMat.specularColor = new BABYLON.Color3(255, 0, 0);
 
+var matChargement = new BABYLON.StandardMaterial("dog", scene);
+  // matChargement.diffuseTexture = new BABYLON.Texture("./textures/icons/Refresh.png", scene);
+  matChargement.diffuseTexture = new BABYLON.Texture("./textures/Loading-2-icon.png", scene);
+   matChargement.diffuseTexture.hasAlpha = true;
+  
+var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 1.5;
+
+ planChargement = BABYLON.Mesh.CreatePlane("planeChargement", 1, scene);
+ planChargement.material = matChargement;
+ planChargement.scaling.x = 0.25;
+ planChargement.scaling.y = 0.25;
+ 
+
+ var angle = 0.1;
+planChargement.isVisible = false;
+    scene.registerBeforeRender(function() {
+        planChargement.rotate(new BABYLON.Vector3(0,0, -1), angle, BABYLON.Space.WORLD);
+    })
+
 /*---------Création de la première photo ---------------*/
-createPhoto1(scene,redMat,greenMat);
+createPhoto1();
 
 
 return scene;
 };
 
-var createPhoto1= function(scene, redMat, greenMat)
+var createPhoto1= function()
 {
  //--------- Chargement de la photo 360°--------------
 var dome = new BABYLON.PhotoDome(
@@ -111,9 +135,8 @@ sphere.position.z = 0;
 
 // Nécessaire si on veut utiliser BABYLON.GUI, variable dans laquelle 
 // on va stocker les objets GUI utilisés (les étiquettes des sphères) 
+
 var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
-
 //Création de l'étiquette de la boule
 
 var rect1 = new BABYLON.GUI.Rectangle();
@@ -141,8 +164,12 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
     // la sphère devient verte pour aider à la navigation de l'utilisateur et 
     //         à notifier que le pointeur est sur la sphère                   
         sphere.material = greenMat;
-   
-       
+        planChargement.position.x = sphere.position.x;
+        planChargement.position.y = sphere.position.y -0.7;
+
+        //planChargement.parent = sphere;
+        
+        planChargement.isVisible = true;
         // Code à exécuter au bout de 2sec
         timer = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
@@ -152,17 +179,19 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
         dome.dispose();
 
     //------Création de la prochaine photo 360-------
-        createPhoto2(scene,redMat,greenMat);
+        createPhoto2();
    
         },1000);
 }));
   
+
+  
 //-----Trigger du pointeur une fois qu'il quitte la sphere APRES l'avoir survolée------
 sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
     
-        clearTimeout(timer)
-        clearTimeout(timervideo);
+        clearTimeout(timer);
         sphere.material = redMat;
+        planChargement.isVisible = false;
        
     
 }));   
@@ -181,9 +210,11 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
         dome.dispose();
 
     //------Création de la prochaine photo 360-------
-        createPhoto2(scene,redMat,greenMat);
+        createPhoto2();
+       
    
     },400);
+    
 
 }));
 
@@ -191,7 +222,7 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
 
 };
 
-var createPhoto2= function(scene,redMat,greenMat)
+var createPhoto2= function()
 {
 //------Création de la photo 360° 
 var dome = new BABYLON.PhotoDome(
@@ -284,11 +315,11 @@ rect3.linkOffsetY = -50;
 // Fabrication de la vidéo 
 
 var show = false;
-var playing = false;
 
+/*
 var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
     light.intensity = 1.5;
-	
+	*/
     // Create a material from the video
 	var mat = new BABYLON.StandardMaterial("mat", scene);
 	var videoTexture = new BABYLON.VideoTexture("video", ["./textures/babylonjs.mp4", "textures/babylonjs.webm"], scene, true, false);
@@ -306,91 +337,122 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     // Create the 3D UI manager
     var manager = new BABYLON.GUI.GUI3DManager(scene);
 
-    // Let's add a button
-    var button = new BABYLON.GUI.HolographicButton("restart");
-    manager.addControl(button);
+    // Let's add a button Reset
+    var buttonReset = new BABYLON.GUI.HolographicButton("restart");
+   
+    manager.addControl(buttonReset);
+   
+    var outReset = true;
     
-    button.position.x = 2.5;
-    button.position.y = 1.5;
-    button.scaling.x = 0.5;
-    button.scaling.y = 0.5;
-   var image = new BABYLON.GUI.Image("reset", "./textures/reset.jpg");
-image.stretch = BABYLON.GUI.Image.STRETCH_FILL;
-button.content = image;
-    button.onPointerUpObservable.add(function(){
-        videoTexture.video.currentTime =0;
-    });
+    buttonReset.position.x = 2.5;
+    buttonReset.position.y = 1.25;
+    buttonReset.scaling.x = 0.5;
+    buttonReset.scaling.y = 0.5;
+    buttonReset.isVisible = false;
+    
+    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Refresh.png");
+    image.width = "65%";
+    image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
+    buttonReset.content = image;
+
+    // Let's add a button Pause
+    var buttonPause = new BABYLON.GUI.HolographicButton("Pause");
+   
+    manager.addControl(buttonPause);
+   
+    var outPause = true;
+    
+    buttonPause.position.x = 1;
+    buttonPause.position.y = 1.25;
+    buttonPause.scaling.x = 0.5;
+    buttonPause.scaling.y = 0.5;
+    buttonPause.isVisible = false;
+    
+    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Pause.png");
+    image.width = "65%";
+    image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
+    buttonPause.content = image;
+
+
+    // Let's add a button Pause
+    var buttonPlay = new BABYLON.GUI.HolographicButton("Play");
+   
+    manager.addControl(buttonPlay);
+   
+    var outPlay = true;
+    
+    buttonPlay.position.x = 1;
+    buttonPlay.position.y = 1.25;
+    buttonPlay.scaling.x = 0.5;
+    buttonPlay.scaling.y = 0.5;
+    buttonPlay.isVisible = false;
+    
+    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Play.png");
+    image.width = "65%";
+    image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
+    buttonPlay.content = image;
+
+
+
+
 
 //--------Création des managers: gèrent les actions relatives aux sphères------
 
 sphere1.actionManager = new BABYLON.ActionManager(scene);
 sphere2.actionManager = new BABYLON.ActionManager(scene);
 sphere3.actionManager = new BABYLON.ActionManager(scene);
-plan.actionManager = new BABYLON.ActionManager(scene);
 
 
-//-------------------- Triggers liés au plan de la vidéo-----------------
-plan.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-            if(playing){
-            videoTexture.video.pause();
-            playing = !playing;
-            }
-            else{
-            videoTexture.video.play();
-            playing = !playing;
-            }
-        }));
-    
-    plan.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
-            
-            timervideo = setTimeout( function(){
-            if(playing){
-            videoTexture.video.pause();
-            playing = !playing;
-            }
-            else{
-            videoTexture.video.play();
-            playing = !playing;
-            }
-            }, 500);
+ //-----TRIGGER DU CLICK SOURIS (non celui du controller casque)----------
 
-        }));
-
-
- //-----Trigger du click SOURIS (non celui du controller casque)----------
 sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
-    timer = setTimeout( function(){
+    timerclick = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
         dome.dispose();
-        advancedTexture.dispose();
+        
         sphere1.dispose();
         sphere2.dispose();
         sphere3.dispose();
         plan.dispose();
+        manager.dispose();
+        buttonReset.dispose();
+        buttonPause.dispose();
+        buttonPlay.dispose();
+       advancedTexture.dispose();
 
     //------Création de la prochaine photo 360-------
-        createPhoto(scene, redMat,greenMat);
+        createPhoto1();
    
     },400);
 }));
 
+
 sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
     
-        timer = setTimeout( function(){
-    //-------Destruction de la photo actuelle-------
+    // On met un setTimeout de 0.4sec (et pas MOINS) car n'en mettant       
+    // pas, si l'utilisateur commence directement à tourner la caméra alors 
+    //         un bug d'image survient                                     
+    timerclick = setTimeout( function(){
+    
         dome.dispose();
         advancedTexture.dispose();
         sphere1.dispose();
         sphere2.dispose();
         sphere3.dispose();
         plan.dispose();
-    //------Création de la prochaine photo 360-------
-        createPhoto3(scene, redMat,greenMat);
-    
+        manager.dispose();
+        buttonReset.dispose();
+        buttonPause.dispose();
+        buttonPlay.dispose();
+       
+        show = null;
+        
+        createPhoto3();
+   
     },400);
-  
-}));
+    
 
+}));
     
 
 sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
@@ -401,24 +463,50 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
     if(!show)
     {
         plan.isVisible = true;
+        buttonReset.isVisible = true;
+        buttonPause.isVisible = true;
         videoTexture.video.play();
        
-        playing = !playing
+       
         
     }
 
     else
     {
+        buttonPause.isVisible = false;
+        buttonPlay.isVisible = false;
         plan.isVisible = false;
+        buttonReset.isVisible = false;
         videoTexture.video.pause();
     }
-    
+   
     show = !show;
   
 
 }));
 
 
+buttonReset.onPointerUpObservable.add(function(){
+        videoTexture.video.currentTime =0;
+    });
+
+buttonPause.onPointerUpObservable.add(function(){
+        videoTexture.video.pause();
+        buttonPause.isVisible = false;
+        buttonPlay.isVisible = true;
+       
+     
+        
+    });
+
+
+buttonPlay.onPointerUpObservable.add(function(){
+        videoTexture.video.play();
+        buttonPlay.isVisible = false;
+        buttonPause.isVisible = true;
+       
+        
+    });
 
 
 
@@ -451,6 +539,9 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
 sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
     
     sphere1.material = greenMat;
+    planChargement.position.x = sphere1.position.x;
+    planChargement.position.y = sphere1.position.y-0.7;
+    planChargement.isVisible = true;
     timer = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
         dome.dispose();
@@ -459,10 +550,13 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         sphere1.dispose();
         sphere2.dispose();
         sphere3.dispose();
+        buttonReset.dispose();
+        buttonPause.dispose();
+        buttonPlay.dispose();
         plan.dispose();
 
     //------Création de la prochaine photo 360-------
-        createPhoto1(scene, redMat,greenMat);
+        createPhoto1();
    
     },1000);
   
@@ -472,7 +566,27 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
 sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
    
    sphere2.material = greenMat;
+   planChargement.position.x = sphere2.position.x;
+   planChargement.position.y = sphere2.position.y-0.7;
+   planChargement.isVisible = true;
+    timer = setTimeout( function(){
+    //-------Destruction de la photo actuelle-------
+        dome.dispose();
+        advancedTexture.dispose();
+        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        sphere1.dispose();
+        sphere2.dispose();
+        sphere3.dispose();
+        buttonReset.dispose();
+        buttonPause.dispose();
+        buttonPlay.dispose();
+        plan.dispose();
+
+    //------Création de la prochaine photo 360-------
+        createPhoto3();
    
+    },1000);
+  
    
 }));
 
@@ -481,57 +595,200 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
     // la sphère devient verte pour aider à la navigation de l'utilisateur et 
     //         à notifier que le pointeur est sur la sphère                   
         sphere3.material = greenMat;
-   
+    planChargement.position.x = sphere3.position.x;
+        planChargement.position.y = sphere3.position.y-0.7;
+        planChargement.isVisible = true;
        
         // Code à exécuter au bout de 2sec
-        timervideo = setTimeout( function(){
- 
-        
-
+        timer = setTimeout( function(){
     if(!show)
     {
-
-        
-        
         plan.isVisible = true;
+         buttonReset.isVisible = true;
+         buttonPause.isVisible = true;
         videoTexture.video.play();
-       
-        playing = !playing
         
     }
 
     else
     {
         plan.isVisible = false;
+         buttonReset.isVisible = false;
+         buttonPause.isVisible = false;
         videoTexture.video.pause();
     }
     
     show = !show;
-   
-   
-        },1000);
+   },1000);
 }));
 
+buttonReset.onPointerMoveObservable.add(function(){
+        outReset = false;
+        timervideo = setTimeout(function(){ 
+            //On test si on est en dehors du bouton reset
+            // Si on est sur le bouton alors on reset
+            // Sinon on ne fait rien
+            if (!outReset) {videoTexture.video.currentTime =0;}},2000);
+      
+       
+    });
+
+buttonPause.onPointerMoveObservable.add(function(){
+        outPause = false;
+        timervideo = setTimeout(function(){ 
+            //On test si on est en dehors du bouton reset
+            // Si on est sur le bouton alors on reset
+            // Sinon on ne fait rien
+            if (!outPause) {
+                videoTexture.video.pause();
+                buttonPause.isVisible = false;
+                buttonPlay.isVisible = true;
+                }
+            },2000);
+      
+      
+       
+    });
+
+buttonPlay.onPointerMoveObservable.add(function(){
+        outPlay = false;
+        timervideo = setTimeout(function(){ 
+            //On test si on est en dehors du bouton reset
+            // Si on est sur le bouton alors on reset
+            // Sinon on ne fait rien
+            if (!outPlay) {
+                videoTexture.video.play();
+                buttonPlay.isVisible = false;
+                buttonPause.isVisible = true;}
+            },2000);
+      
+       
+       
+    });
+
+    //---------Trigger une fois le pointeur hors du mesh ----------------
 sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
     
     sphere1.material = redMat;
     clearTimeout(timer);
+    planChargement.isVisible = false;
   
 }));
 
 sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
     
-    sphere3.material = redMat;
+    sphere2.material = redMat;
     clearTimeout(timer);
+     planChargement.isVisible = false;
   
 }));
 
 sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
     
     sphere3.material = redMat;
-    clearTimeout(timervideo);
+    clearTimeout(timer);
+     planChargement.isVisible = false;
   
 }));
+
+ buttonReset.onPointerOutObservable.add(function(){
+        //Dès qu'on franchit le contour du bouton pour aller à l'extérieur
+        // on met à jour la variable out
+        outReset =true;
+        
+    });
+
+    buttonPause.onPointerOutObservable.add(function(){
+        //Dès qu'on franchit le contour du bouton pour aller à l'extérieur
+        // on met à jour la variable out
+        outPause =true;
+        
+    });
+
+    buttonPlay.onPointerOutObservable.add(function(){
+        //Dès qu'on franchit le contour du bouton pour aller à l'extérieur
+        // on met à jour la variable out
+        outPlay =true;
+        
+    });
+
+}
+
+
+
+
+var createPhoto3= function()
+{
+//------Création de la photo 360° 
+var dome = new BABYLON.PhotoDome(
+   "testdome",
+   "./textures/360photo.jpg",
+   {
+       resolution: 32,
+       size: 1000
+   },
+   scene
+);
+
+var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 1.5;
+	var mat = new BABYLON.StandardMaterial("dog", scene);
+   mat.diffuseTexture = new BABYLON.Texture("https://upload.wikimedia.org/wikipedia/commons/3/33/Info_icon_002.svg", scene);
+    mat.diffuseTexture.hasAlpha = true;
+    mat.backFaceCulling = false;
+ 
+var plan = BABYLON.Mesh.CreatePlane("plane1", 2, scene);
+    //plan.scaling.x = 1920/1080; // set aspect ratio
+	plan.material = mat;
+    plan.position.x = 1;
+    plan.scaling.x = 0.25;
+    plan.scaling.y = 0.25;
+     var angle = 0.01;
+
+    scene.registerBeforeRender(function() {
+        plan.rotate(new BABYLON.Vector3(0,1, 0), angle, BABYLON.Space.WORLD);
+    })
+
+
+
+    var show = false;
+    var plan2 = BABYLON.Mesh.CreatePlane("plane2", 2, scene);
+    
+    plan2.isVisible = false;
+   plan.actionManager = new BABYLON.ActionManager(scene);
+    plan.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
+            if(!show){
+                plan2.isVisible = true;
+            }
+            else{
+            plan2.isVisible = false;
+            }
+            show = !show;
+        }));
+    
+    plan.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, function () {
+            planChargement.position.x = plan.position.x;
+        planChargement.position.y = plan.position.y-0.7;
+        planChargement.isVisible = true;
+            timerinfo = setTimeout( function(){
+           if(!show){
+                plan2.isVisible = true;
+            }
+            else{
+            plan2.isVisible = false;
+            }
+            show = !show;
+            }, 500);
+
+        }));
+
+        plan.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, function () {
+            
+            clearTimeout(timerinfo);
+             planChargement.isVisible = false;
+
+        }));
+
 
 
 }
