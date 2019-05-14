@@ -97,7 +97,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
  planChargement.scaling.y = 0.25;
  
 
- var angle = 0.05;
+ var angle = 0.1;
 planChargement.isVisible = false;
     scene.registerBeforeRender(function() {
         planChargement.rotate(new BABYLON.Vector3(0,0, -1), angle, BABYLON.Space.WORLD);
