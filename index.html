@@ -130,7 +130,7 @@ var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
 
 // positionnement de la sphère
 sphere.material = redMat;
-//sphere.material = greenMat;
+
 sphere.position.x = 1;
 sphere.position.y = 0;
 sphere.position.z = 0; 
@@ -394,7 +394,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonPlay.content = image;
-	
+/*	
    // Let's add a button Avancer
     var buttonAvancer = new BABYLON.GUI.HolographicButton("Avancer");
    
@@ -432,7 +432,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonReculer.content = image;
 
-
+*/
 
 
 //--------Création des managers: gèrent les actions relatives aux sphères------
@@ -503,8 +503,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         plan.isVisible = true;
         buttonReset.isVisible = true;
         buttonPause.isVisible = true;
-	    buttonAvancer.isVisible = true;
-        buttonReculer.isVisible = true;
+	   /* buttonAvancer.isVisible = true;
+        buttonReculer.isVisible = true;*/
         videoTexture.video.play();    
     }
     else
@@ -512,8 +512,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         buttonPause.isVisible = false;
         buttonPlay.isVisible = false;
         plan.isVisible = false;
-	      buttonAvancer.isVisible = false;
-        buttonReculer.isVisible = false;
+	     /* buttonAvancer.isVisible = false;
+        buttonReculer.isVisible = false;*/
         buttonReset.isVisible = false;
         videoTexture.video.pause();
     }
@@ -527,6 +527,7 @@ buttonReset.onPointerUpObservable.add(function(){
         planChargement.isVisible = false;
    
     });
+/*	
 buttonAvancer.onPointerUpObservable.add(function(){
         // on avance de 10 sec
      
@@ -541,6 +542,7 @@ buttonReculer.onPointerUpObservable.add(function(){
         planChargement.isVisible = false;
    
     });
+    */
 buttonPause.onPointerUpObservable.add(function(){
         videoTexture.video.pause();
         buttonPause.isVisible = false;
@@ -665,8 +667,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         plan.isVisible = true;
          buttonReset.isVisible = true;
          buttonPause.isVisible = true;
-	 buttonAvancer.isVisible = true;
-        buttonReculer.isVisible = true;
+	// buttonAvancer.isVisible = true;
+        //buttonReculer.isVisible = true;
         videoTexture.video.play();
         
     }
@@ -676,8 +678,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         plan.isVisible = false;
          buttonReset.isVisible = false;
          buttonPause.isVisible = false;
-	 buttonAvancer.isVisible = false;
-        buttonReculer.isVisible = false;
+	// buttonAvancer.isVisible = false;
+        //buttonReculer.isVisible = false;
         videoTexture.video.pause();
     }
     
@@ -726,6 +728,7 @@ buttonPause.onPointerMoveObservable.add(function(){
       
        
     });
+	/*
 buttonAvancer.onPointerMoveObservable.add(function(){
         outAvancer = false;
         planChargement.position.x = buttonAvancer.position.x;
@@ -757,7 +760,7 @@ buttonReculer.onPointerMoveObservable.add(function(){
                 
                 planChargement.isVisible = false;
    }},1000);
-   
+   */
       
        
     });
