@@ -383,7 +383,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
    
     var outPlay = true;
     
-    buttonPlay.position.x = 1;
+    buttonPlay.position.x = 1.5;
     buttonPlay.position.y = 1.25;
     buttonPlay.scaling.x = 0.5;
     buttonPlay.scaling.y = 0.5;
@@ -393,7 +393,24 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonPlay.content = image;
-
+	
+   // Let's add a button Avancer
+    var buttonAvancer = new BABYLON.GUI.HolographicButton("Avancer");
+   
+    manager.addControl(buttonAvancer);
+   
+    var outAvancer = true;
+    
+    buttonAvancer.position.x = 2;
+    buttonAvancer.position.y = 1.25;
+    buttonAvancer.scaling.x = 0.5;
+    buttonAvancer.scaling.y = 0.5;
+    buttonAvancer.isVisible = false;
+    
+    var image = new BABYLON.GUI.Image("reset", "./textures/avancer.png");
+    image.width = "55%";
+    image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
+    buttonAvancer.content = image;
 
 
 
