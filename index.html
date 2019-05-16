@@ -406,7 +406,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonAvancer.position.y = 1.25;
     buttonAvancer.scaling.x = 0.5;
     buttonAvancer.scaling.y = 0.5;
-    buttonAvancer.isVisible = true;
+    buttonAvancer.isVisible = false;
    
     var image = new BABYLON.GUI.Image("reset", "./textures/avancer.png");
     image.width = "55%";
@@ -424,7 +424,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonReculer.position.y = 1.25;
     buttonReculer.scaling.x = 0.5;
     buttonReculer.scaling.y = 0.5;
-    buttonReculer.isVisible = true;
+    buttonReculer.isVisible = false;
     
     var image = new BABYLON.GUI.Image("reset", "./textures/avancer.png");
     image.width = "55%";
@@ -503,6 +503,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         plan.isVisible = true;
         buttonReset.isVisible = true;
         buttonPause.isVisible = true;
+	    buttonAvancer.isVisible = true;
+        buttonReculer.isVisible = true;
         videoTexture.video.play();    
     }
     else
@@ -510,6 +512,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         buttonPause.isVisible = false;
         buttonPlay.isVisible = false;
         plan.isVisible = false;
+	      buttonAvancer.isVisible = false;
+        buttonReculer.isVisible = false;
         buttonReset.isVisible = false;
         videoTexture.video.pause();
     }
@@ -523,7 +527,20 @@ buttonReset.onPointerUpObservable.add(function(){
         planChargement.isVisible = false;
    
     });
+buttonAvancer.onPointerUpObservable.add(function(){
+        // on avance de 10 sec
+     
+        videoTexture.video.currentTime += 10;
+        planChargement.isVisible = false;
+   
+    });
 
+buttonReculer.onPointerUpObservable.add(function(){
+        // on recule de 10 sec
+        videoTexture.video.currentTime -=10;
+        planChargement.isVisible = false;
+   
+    });
 buttonPause.onPointerUpObservable.add(function(){
         videoTexture.video.pause();
         buttonPause.isVisible = false;
@@ -534,6 +551,8 @@ buttonPause.onPointerUpObservable.add(function(){
      
         
     });
+	
+
 
 
 buttonPlay.onPointerUpObservable.add(function(){
@@ -646,6 +665,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         plan.isVisible = true;
          buttonReset.isVisible = true;
          buttonPause.isVisible = true;
+	 buttonAvancer.isVisible = true;
+        buttonReculer.isVisible = true;
         videoTexture.video.play();
         
     }
@@ -655,6 +676,8 @@ sphere3.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         plan.isVisible = false;
          buttonReset.isVisible = false;
          buttonPause.isVisible = false;
+	 buttonAvancer.isVisible = false;
+        buttonReculer.isVisible = false;
         videoTexture.video.pause();
     }
     
@@ -676,7 +699,7 @@ buttonReset.onPointerMoveObservable.add(function(){
             // Sinon on ne fait rien
             if (!outReset) {videoTexture.video.currentTime =0;
             planChargement.isVisible = false;
-   }},2000);
+   }},1000);
       
        
     });
@@ -698,12 +721,46 @@ buttonPause.onPointerMoveObservable.add(function(){
                 planChargement.isVisible = false;
    
                 }
-            },2000);
+            },1000);
       
       
        
     });
-
+buttonAvancer.onPointerMoveObservable.add(function(){
+        outAvancer = false;
+        planChargement.position.x = buttonAvancer.position.x;
+        planChargement.position.y = buttonAvancer.position.y-0.5;
+        planChargement.isVisible = true;
+    
+        timervideo = setTimeout(function(){ 
+            //On test si on est en dehors du bouton reset
+            // Si on est sur le bouton alors on reset
+            // Sinon on ne fait rien
+            if (!outAvancer) {videoTexture.video.currentTime += 10;
+            planChargement.isVisible = false;
+   }},1000);
+      
+       
+    });
+buttonReculer.onPointerMoveObservable.add(function(){
+        outReculer = false;
+        planChargement.position.x = buttonReculer.position.x;
+        planChargement.position.y = buttonReculer.position.y-0.5;
+        planChargement.isVisible = true;
+    
+        timervideo = setTimeout(function(){ 
+            //On test si on est en dehors du bouton reset
+            // Si on est sur le bouton alors on reset
+            // Sinon on ne fait rien
+            if (!outReculer) {
+                videoTexture.video.currentTime -= 10;
+                
+                planChargement.isVisible = false;
+   }},1000);
+   
+      
+       
+    });
 buttonPlay.onPointerMoveObservable.add(function(){
         outPlay = false;
         planChargement.position.x = buttonPlay.position.x;
@@ -720,7 +777,7 @@ buttonPlay.onPointerMoveObservable.add(function(){
                 buttonPause.isVisible = true;
                 planChargement.isVisible = false;
    }
-            },2000);
+            },1000);
       
        
        
