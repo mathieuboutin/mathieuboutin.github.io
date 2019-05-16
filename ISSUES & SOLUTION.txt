@@ -1,0 +1,13 @@
+
+                                      Firefox ISSUES : 
+
+
+* (ORDINATEUR)	Problème lorsqu’on utilise le trigger pointeurOver sur reset+avancer+reculer car on modifie le timer de la vidéo 
+          => Problème réglé avec Firefox 60.6.3esr.
+	              Pas de problèmes lorsqu’on utilise le trigger pickup. 
+                
+                
+                
+                                    Chrome ISSUES:
+ * (ORDINATEUR) VR ne fonctionne pas
+                Pas de solutions pour le moment
