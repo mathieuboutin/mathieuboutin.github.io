@@ -129,8 +129,8 @@ var dome = new BABYLON.PhotoDome(
 var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
 
 // positionnement de la sphère
-//sphere.material = redMat;
-sphere.material = greenMat;
+sphere.material = redMat;
+//sphere.material = greenMat;
 sphere.position.x = 1;
 sphere.position.y = 0;
 sphere.position.z = 0; 
@@ -407,12 +407,12 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonAvancer.scaling.x = 0.5;
     buttonAvancer.scaling.y = 0.5;
     buttonAvancer.isVisible = true;
-   /* 
+   
     var image = new BABYLON.GUI.Image("reset", "./textures/avancer.png");
     image.width = "55%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonAvancer.content = image;
-	*/
+	
     // Let's add a button Reculer
     var buttonReculer = new BABYLON.GUI.HolographicButton("Reculer");
    
@@ -428,7 +428,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     
     var image = new BABYLON.GUI.Image("reset", "./textures/avancer.png");
     image.width = "55%";
-    image.rotation = 1.57;
+    image.rotation = 3.14;
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonReculer.content = image;
 
