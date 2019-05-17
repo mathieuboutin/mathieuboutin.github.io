@@ -129,7 +129,7 @@ var dome = new BABYLON.PhotoDome(
 var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
 
 // positionnement de la sphère
-sphere.material = redMat;
+sphere.material = greenMat;
 
 sphere.position.x = 1;
 sphere.position.y = 0;
@@ -324,7 +324,8 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
 	*/
     // Create a material from the video
 	var mat = new BABYLON.StandardMaterial("mat", scene);
-	var videoTexture = new BABYLON.VideoTexture("video", "./textures/babylonjs.mp4", scene, true, false);
+	//var videoTexture = new BABYLON.VideoTexture("video", "./textures/babylonjs.mp4", scene, true, false);
+	var videoTexture = new BABYLON.VideoTexture("video", "./testVideo.mp4", scene, true, false);
 	mat.diffuseTexture = videoTexture;
 
     // Attach the video material the a mesh
