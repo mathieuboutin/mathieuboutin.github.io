@@ -129,7 +129,7 @@ var dome = new BABYLON.PhotoDome(
 var sphere = BABYLON.Mesh.CreateSphere("sphere1", 16, 1, scene);
 
 // positionnement de la sphère
-sphere.material = greenMat;
+sphere.material = redMat;
 
 sphere.position.x = 1;
 sphere.position.y = 0;
@@ -336,6 +336,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     plan.position.x = 1;
     plan.position.y =2.5;
     videoTexture.video.pause();
+	videoTexture.video.loop = false;
 
     // Create the 3D UI manager
     var manager = new BABYLON.GUI.GUI3DManager(scene);
