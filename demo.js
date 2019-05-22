@@ -130,8 +130,11 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
     //-------Destruction de la photo actuelle-------
         
         advancedTexture.dispose();
+	advancedTexture = null;
         sphere.dispose();
+	sphere = null;
         dome.dispose();
+	dome = null;
 
     //------Création de la prochaine photo 360-------
         createPhoto2();
@@ -161,8 +164,11 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
     //-------Destruction de la photo actuelle-------
         
         advancedTexture.dispose();
+	advancedTexture = null;
         sphere.dispose();
+	sphere = null;
         dome.dispose();
+	dome = null;
 
     //------Création de la prochaine photo 360-------
         createPhoto2();
@@ -364,19 +370,31 @@ sphere3.actionManager = new BABYLON.ActionManager(scene);
 sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
     timerclick = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
-        dome.dispose();
+       
         
         sphere1.dispose();
+	    sphere1 = null;
         sphere2.dispose();
+	    sphere2 = null;
         sphere3.dispose();
+	    sphere3 = null;
 	videoTexture.dispose();
+	    videoTexture =null;
         plan.dispose();
+	    plan = null;
         manager.dispose();
+	    manager = null;
         buttonReset.dispose();
+	    buttonReset = null;
         buttonPause.dispose();
+	    buttonPause = null;
         buttonPlay.dispose();
+	    buttonPlay = null;
        advancedTexture.dispose();
+	    advancedTexture = null;
         planChargement.isVisible = false;
+	dome.dispose();
+	    dome = null;
    
     //------Création de la prochaine photo 360-------
         createPhoto1();
@@ -392,18 +410,30 @@ sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
     //         un bug d'image survient                                     
     timerclick = setTimeout( function(){
     
-        dome.dispose();
-        advancedTexture.dispose();
+         
         sphere1.dispose();
+	    sphere1 = null;
         sphere2.dispose();
+	    sphere2 = null;
         sphere3.dispose();
+	    sphere3 = null;
 	videoTexture.dispose();
+	    videoTexture =null;
         plan.dispose();
+	    plan = null;
         manager.dispose();
+	    manager = null;
         buttonReset.dispose();
+	    buttonReset = null;
         buttonPause.dispose();
+	    buttonPause = null;
         buttonPlay.dispose();
-       planChargement.isVisible = false;
+	    buttonPlay = null;
+       advancedTexture.dispose();
+	    advancedTexture = null;
+        planChargement.isVisible = false;
+	dome.dispose();
+	    dome = null;
    
       
         
@@ -502,18 +532,30 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
     planChargement.isVisible = true;
     timer = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
-        dome.dispose();
-        advancedTexture.dispose();
-        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+        
         sphere1.dispose();
+	    sphere1 = null;
         sphere2.dispose();
+	    sphere2 = null;
         sphere3.dispose();
-	    videoTexture.dispose();
-        buttonReset.dispose();
-        buttonPause.dispose();
-        buttonPlay.dispose();
+	    sphere3 = null;
+	videoTexture.dispose();
+	    videoTexture =null;
         plan.dispose();
+	    plan = null;
+        manager.dispose();
+	    manager = null;
+        buttonReset.dispose();
+	    buttonReset = null;
+        buttonPause.dispose();
+	    buttonPause = null;
+        buttonPlay.dispose();
+	    buttonPlay = null;
+       advancedTexture.dispose();
+	    advancedTexture = null;
         planChargement.isVisible = false;
+	dome.dispose();
+	    dome = null;
    
     //------Création de la prochaine photo 360-------
         createPhoto1();
@@ -531,18 +573,30 @@ sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
    planChargement.isVisible = true;
     timer = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
-        dome.dispose();
-        advancedTexture.dispose();
-        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+         
         sphere1.dispose();
+	    sphere1 = null;
         sphere2.dispose();
+	    sphere2 = null;
         sphere3.dispose();
-	    videoTexture.dispose();
-        buttonReset.dispose();
-        buttonPause.dispose();
-        buttonPlay.dispose();
+	    sphere3 = null;
+	videoTexture.dispose();
+	    videoTexture =null;
         plan.dispose();
+	    plan = null;
+        manager.dispose();
+	    manager = null;
+        buttonReset.dispose();
+	    buttonReset = null;
+        buttonPause.dispose();
+	    buttonPause = null;
+        buttonPlay.dispose();
+	    buttonPlay = null;
+       advancedTexture.dispose();
+	    advancedTexture = null;
         planChargement.isVisible = false;
+	dome.dispose();
+	    dome = null;
    
     //------Création de la prochaine photo 360-------
         createPhoto3();
