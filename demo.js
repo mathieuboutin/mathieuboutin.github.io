@@ -306,7 +306,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonReset.scaling.y = 0.5;
     buttonReset.isVisible = false;
     
-    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Refresh.png");
+    var image = new BABYLON.GUI.Image("reset", "./textures/Refresh.png");
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonReset.content = image;
@@ -324,7 +324,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonPause.scaling.y = 0.5;
     buttonPause.isVisible = false;
     
-    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Pause.png");
+    var image = new BABYLON.GUI.Image("reset", "./textures/Pause.png");
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonPause.content = image;
@@ -343,7 +343,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonPlay.scaling.y = 0.5;
     buttonPlay.isVisible = false;
     
-    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Play.png");
+    var image = new BABYLON.GUI.Image("reset", "./textures/Play.png");
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonPlay.content = image;
