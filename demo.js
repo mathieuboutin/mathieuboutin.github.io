@@ -168,7 +168,7 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
         createPhoto2();
        planChargement.isVisible = false;
    
-    },400);
+    },500);
     
 
 }));
@@ -369,6 +369,7 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         sphere1.dispose();
         sphere2.dispose();
         sphere3.dispose();
+	videoTexture.dispose();
         plan.dispose();
         manager.dispose();
         buttonReset.dispose();
@@ -380,7 +381,7 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
     //------Création de la prochaine photo 360-------
         createPhoto1();
    
-    },400);
+    },500);
 }));
 
 
@@ -396,6 +397,7 @@ sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         sphere1.dispose();
         sphere2.dispose();
         sphere3.dispose();
+	videoTexture.dispose();
         plan.dispose();
         manager.dispose();
         buttonReset.dispose();
@@ -407,7 +409,7 @@ sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         
         createPhoto3();
    
-    },400);
+    },500);
     
 
 }));
@@ -506,6 +508,7 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         sphere1.dispose();
         sphere2.dispose();
         sphere3.dispose();
+	    videoTexture.dispose();
         buttonReset.dispose();
         buttonPause.dispose();
         buttonPlay.dispose();
@@ -534,6 +537,7 @@ sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
         sphere1.dispose();
         sphere2.dispose();
         sphere3.dispose();
+	    videoTexture.dispose();
         buttonReset.dispose();
         buttonPause.dispose();
         buttonPlay.dispose();
