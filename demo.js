@@ -1,4 +1,4 @@
-
+var canvas = document.getElementById("renderCanvas");
  var timer;
  var timerclick;
  var timervideo;
