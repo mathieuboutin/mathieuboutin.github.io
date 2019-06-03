@@ -70,6 +70,14 @@ vrHelper.displayGaze = true ;
 vrHelper.displayLaserPointer = true;
 vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
 vrHelper.enableInteractions();
+
+vrHelper.onEnteringVR.add(()=> {
+    scene.getEngine().isPointerLock = true;
+})
+
+vrHelper.onExitingVR.add( ()=> {
+    scene.getEngine().isPointerLock = false;
+})
 /*-------- Création Matériaux---------------*/
  greenMat = new BABYLON.StandardMaterial("green", scene);
     greenMat.diffuseColor = new BABYLON.Color3(0, 255, 0);
@@ -175,11 +183,8 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
     //-------Destruction de la photo actuelle-------
         
         advancedTexture.dispose();
-	advancedTexture = null;
         sphere.dispose();
-	sphere = null;
         dome.dispose();
-	dome = null;
 
     //------Création de la prochaine photo 360-------
         createPhoto2();
@@ -209,17 +214,14 @@ sphere.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Action
     //-------Destruction de la photo actuelle-------
         
         advancedTexture.dispose();
-	advancedTexture = null;
         sphere.dispose();
-	sphere = null;
         dome.dispose();
-	dome = null;
 
     //------Création de la prochaine photo 360-------
         createPhoto2();
        planChargement.isVisible = false;
    
-    },500);
+    },400);
     
 
 }));
@@ -357,7 +359,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonReset.scaling.y = 0.5;
     buttonReset.isVisible = false;
     
-    var image = new BABYLON.GUI.Image("reset", "./textures/Refresh.png");
+    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Refresh.png");
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonReset.content = image;
@@ -375,7 +377,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonPause.scaling.y = 0.5;
     buttonPause.isVisible = false;
     
-    var image = new BABYLON.GUI.Image("reset", "./textures/Pause.png");
+    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Pause.png");
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonPause.content = image;
@@ -394,7 +396,7 @@ var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0),
     buttonPlay.scaling.y = 0.5;
     buttonPlay.isVisible = false;
     
-    var image = new BABYLON.GUI.Image("reset", "./textures/Play.png");
+    var image = new BABYLON.GUI.Image("reset", "./textures/icons/Play.png");
     image.width = "65%";
     image.stretch = BABYLON.GUI.Image.STRETCH_UNIFORM;
     buttonPlay.content = image;
@@ -415,36 +417,23 @@ sphere3.actionManager = new BABYLON.ActionManager(scene);
 sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, function () {
     timerclick = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
-       
+        dome.dispose();
         
         sphere1.dispose();
-	    sphere1 = null;
         sphere2.dispose();
-	    sphere2 = null;
         sphere3.dispose();
-	    sphere3 = null;
-	videoTexture.dispose();
-	    videoTexture =null;
         plan.dispose();
-	    plan = null;
         manager.dispose();
-	    manager = null;
         buttonReset.dispose();
-	    buttonReset = null;
         buttonPause.dispose();
-	    buttonPause = null;
         buttonPlay.dispose();
-	    buttonPlay = null;
        advancedTexture.dispose();
-	    advancedTexture = null;
         planChargement.isVisible = false;
-	dome.dispose();
-	    dome = null;
    
     //------Création de la prochaine photo 360-------
         createPhoto1();
    
-    },500);
+    },400);
 }));
 
 
@@ -455,36 +444,23 @@ sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
     //         un bug d'image survient                                     
     timerclick = setTimeout( function(){
     
-         
+        dome.dispose();
+        advancedTexture.dispose();
         sphere1.dispose();
-	    sphere1 = null;
         sphere2.dispose();
-	    sphere2 = null;
         sphere3.dispose();
-	    sphere3 = null;
-	videoTexture.dispose();
-	    videoTexture =null;
         plan.dispose();
-	    plan = null;
         manager.dispose();
-	    manager = null;
         buttonReset.dispose();
-	    buttonReset = null;
         buttonPause.dispose();
-	    buttonPause = null;
         buttonPlay.dispose();
-	    buttonPlay = null;
-       advancedTexture.dispose();
-	    advancedTexture = null;
-        planChargement.isVisible = false;
-	dome.dispose();
-	    dome = null;
+       planChargement.isVisible = false;
    
       
         
         createPhoto3();
    
-    },500);
+    },400);
     
 
 }));
@@ -577,30 +553,17 @@ sphere1.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
     planChargement.isVisible = true;
     timer = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
-        
+        dome.dispose();
+        advancedTexture.dispose();
+        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         sphere1.dispose();
-	    sphere1 = null;
         sphere2.dispose();
-	    sphere2 = null;
         sphere3.dispose();
-	    sphere3 = null;
-	videoTexture.dispose();
-	    videoTexture =null;
-        plan.dispose();
-	    plan = null;
-        manager.dispose();
-	    manager = null;
         buttonReset.dispose();
-	    buttonReset = null;
         buttonPause.dispose();
-	    buttonPause = null;
         buttonPlay.dispose();
-	    buttonPlay = null;
-       advancedTexture.dispose();
-	    advancedTexture = null;
+        plan.dispose();
         planChargement.isVisible = false;
-	dome.dispose();
-	    dome = null;
    
     //------Création de la prochaine photo 360-------
         createPhoto1();
@@ -618,30 +581,17 @@ sphere2.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.Actio
    planChargement.isVisible = true;
     timer = setTimeout( function(){
     //-------Destruction de la photo actuelle-------
-         
+        dome.dispose();
+        advancedTexture.dispose();
+        advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
         sphere1.dispose();
-	    sphere1 = null;
         sphere2.dispose();
-	    sphere2 = null;
         sphere3.dispose();
-	    sphere3 = null;
-	videoTexture.dispose();
-	    videoTexture =null;
-        plan.dispose();
-	    plan = null;
-        manager.dispose();
-	    manager = null;
         buttonReset.dispose();
-	    buttonReset = null;
         buttonPause.dispose();
-	    buttonPause = null;
         buttonPlay.dispose();
-	    buttonPlay = null;
-       advancedTexture.dispose();
-	    advancedTexture = null;
+        plan.dispose();
         planChargement.isVisible = false;
-	dome.dispose();
-	    dome = null;
    
     //------Création de la prochaine photo 360-------
         createPhoto3();
@@ -884,7 +834,6 @@ var plan = BABYLON.Mesh.CreatePlane("plane1", 2, scene);
 
 
 }
-
 
          
       
