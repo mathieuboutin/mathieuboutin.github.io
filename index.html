@@ -302,7 +302,7 @@ scene.onPointerDown = function (evt, pickResult) {
     sps.vars.target.scaleInPlace(radius);
     sps.vars.target.addInPlace(p.position);
     sps.vars.justClicked = true;
-    setTimeOut(()=> {plane.isVisible = true;},2000);
+    plane.isVisible = true;
 
 
 }
