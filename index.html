@@ -25,24 +25,7 @@
         <script language="JavaScript">
             function preloader()
             {
-                 // Compteur
-                 var i = 0;
-            
-                 // Créer l'objet
-                 imageObj = new Image();
-            
-                 // Définir la liste d'images
-                 images = new Array();
-                 images[0]="img/image1.png"
-                 images[1]="img/image2.png"
-                 images[2]="img/image3.png"
-                 images[3]="img/image4.png"
-            
-                 // Démarrer le préchargement
-                 for(i=0; i<=3; i++)
-                 {
-                      imageObj.src=images[i];
-                 }
+                 
             }
             </script>
         <style>
@@ -62,7 +45,7 @@
         </style>
         <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/oxanium" type="text/css"/> 
     </head>
-<body>
+<body onLoad="javascript:preloader()>
     <canvas id="renderCanvas"></canvas>
     <script src="TweenLite.js"></script>
     <script>
