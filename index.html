@@ -76,7 +76,54 @@
         vrHelper.onExitingVR.add( ()=> {
             scene.getEngine().isPointerLock = false;
         })
-        
+        let dome = new BABYLON.PhotoDome(
+                "scene1",
+                "./img/image1.png",
+                {
+                    resolution:32,
+                    size: 1000,
+                    faceForward: false
+                },
+                scene
+            )
+            dome.dispose();
+            dome = null;
+          dome = new BABYLON.PhotoDome(
+                "scene1",
+                "./img/image2.png",
+                {
+                    resolution:32,
+                    size: 1000,
+                    faceForward: false
+                },
+                scene
+            )
+            dome.dispose();
+            dome = null;
+            dome = new BABYLON.PhotoDome(
+                "scene1",
+                "./img/image3.png",
+                {
+                    resolution:32,
+                    size: 1000,
+                    faceForward: false
+                },
+                scene
+            )
+            dome.dispose();
+            dome = null;
+            dome = new BABYLON.PhotoDome(
+                "scene1",
+                "./img/image4.png",
+                {
+                    resolution:32,
+                    size: 1000,
+                    faceForward: false
+                },
+                scene
+            )
+            dome.dispose();
+            dome = null;
         //----------------------MATERIAUX--------------------------------------------------------------
             matIconeVideo = new BABYLON.StandardMaterial( scene);
             matIconeVideo.diffuseTexture = new BABYLON.Texture("icon/iconeVideo.png",scene,true,false);    
