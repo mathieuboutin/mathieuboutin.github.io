@@ -50,6 +50,7 @@
         let vrHelper;
         let camera;
         var matIconeVideo,matHyperLink,matLink,matImage,matImageDisplay,matVideo,matClose,matreset,matplayPause,videoTexture;
+         let dome;
         var createScene = function () {
         
         /*------ Initialisation Scène & Camera ------*/  
@@ -134,7 +135,7 @@
 
         var createPhoto1 = function()
         {
-            let dome = new BABYLON.PhotoDome(
+            dome = new BABYLON.PhotoDome(
                 "scene1",
                 "./img/image1.png",
                 {
@@ -520,8 +521,7 @@
                 planVideo.dispose();
                 planVideo = null;
                 
-               dome.dispose();
-               dome = null;
+               
 
                createPhoto2();
             }, 3000)
@@ -633,8 +633,7 @@
                 planVideo.dispose();
                 planVideo = null;
                 
-               dome.dispose();
-               dome = null;
+              
 
                 createPhoto2();
 
@@ -1143,7 +1142,10 @@
     }
         var createPhoto2 = function()
         {
-            let dome = new BABYLON.PhotoDome(
+            
+            dome.dispose();
+               dome = null;
+            dome = new BABYLON.PhotoDome(
             "scene2",
             "./img/image2.png",
             {
@@ -1242,9 +1244,7 @@
                 planLink = null;
                 
                 
-               dome.dispose();
-               dome = null;
-
+              
                createPhoto3()
             }, 3000)
         }
@@ -1282,8 +1282,7 @@
                 
                 
                 
-               dome.dispose();
-               dome = null;
+             
 
                 createPhoto3();
 
@@ -1533,8 +1532,7 @@
                 planInfo.dispose();
                 planInfo = null;
                 
-               dome.dispose();
-               dome = null;
+               
 
                createPhoto4()
             }, 3000)
@@ -1594,8 +1592,7 @@
                 planInfo.dispose();
                 planInfo = null;
                 
-               dome.dispose();
-               dome = null;
+              
 
                createPhoto4();
 
@@ -1758,7 +1755,9 @@
 
         var createPhoto4 = function()
         {
-            let dome = new BABYLON.PhotoDome(
+            dome.dispose();
+            dome = null;
+             dome = new BABYLON.PhotoDome(
                 "scene4",
                 "./img/image4.png",
                 {
