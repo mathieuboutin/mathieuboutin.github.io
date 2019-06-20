@@ -62,7 +62,7 @@
         
         /*---------Ajout de la VR-------------------*/     
         
-         vrHelper = scene.createDefaultVRExperience();
+         vrHelper = scene.createDefaultVRExperience({useMultiview: true});
         
         vrHelper.displayGaze = true ;
         vrHelper.displayLaserPointer = true;
