@@ -1112,15 +1112,16 @@
            playPause.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
             {
                 clearTimeout(timerin);
-                if(videoTexture.video.played)
+                if(play)
                 {
                     videoTexture.video.pause();
+                   
                 }
                 else
                 {
                     videoTexture.video.play();
                 }
-                play = !play
+               play = !play;
                 out = true;
                 firstTimeIn = true;
         
