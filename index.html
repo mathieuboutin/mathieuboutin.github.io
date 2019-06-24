@@ -118,7 +118,7 @@
             matClose.diffuseTexture.hasAlpha = true;
 
             matreset = new BABYLON.StandardMaterial("dog", scene);
-            matreset.diffuseTexture = new BABYLON.Texture("icon/reset.jpg", scene);
+            matreset.diffuseTexture = new BABYLON.Texture("icon/reset.jpg", scene, true, false);
             matreset.diffuseTexture.hasAlpha = true;
 
             matplayPause = new BABYLON.StandardMaterial("dog", scene);
@@ -289,7 +289,7 @@
         playPause.material = matplayPause;
 
        // var reset = new BABYLON.Mesh.CreatePlane("reset",2,scene);
-        var reset = BABYLON.Mesh.CreateDisc("Hyperlink", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+        var reset = BABYLON.Mesh.CreateDisc("Hyperlink", 1, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
         reset.position = Video.position.add(Video.position.subtract(camera.position).normalize().scale(-0.5));
         reset.position = reset.position.add(new BABYLON.Vector3(0,-2,2))
         reset.isVisible = false;
