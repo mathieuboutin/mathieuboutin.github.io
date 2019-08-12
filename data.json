@@ -1,0 +1,307 @@
+{
+  "Story": {
+    "id": "demo",
+    "name": "demo",
+    "scenes": [
+      {
+        "id": 0,
+        "name": "scene1",
+        "fov": "",
+        "playlist": {
+          "url": "",
+          "loop": "",
+          "volume": ""
+        },
+        "dom": {
+          "id": "scene1",
+          "name": "scene1",
+          "url": "./img/image1.jpg"
+        },
+        "hotspot": [
+          {
+            "id": 0,
+            "name": "hyperlink",
+            "transform": {
+              "position": {
+                "x": -7.21516768075967,
+                "y": 0,
+                "z": -14.081954471594145
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "hyperlink",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "event": {
+              "url": "https://www.google.fr/",
+              "name": "Google"
+            }
+          },
+          {
+            "id": 1,
+            "name": "vers Sc2",
+            "transform": {
+              "position": {
+                "x": -7.856177494195498,
+                "y": -7.575172191173865e-26,
+                "z": -11.002394108127689
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "link",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "eventTarget": {
+              "id": 1
+            }
+          },
+          {
+            "id": 2,
+            "name": "Video",
+            "transform": {
+              "position": {
+                "x": -11.686181615057734,
+                "y": 0,
+                "z": -3.300905990659318
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "video",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "event": {
+              "url": "img/pub.mp4"
+            }
+          },
+          {
+            "id": 3,
+            "name": "Image",
+            "transform": {
+              "position": {
+                "x": -12.377351007646315,
+                "y": -1.4211785528481757e-24,
+                "z": -9.052478645879221
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "image",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            }
+          }
+        ]
+      },
+      {
+        "id": 1,
+        "name": "scene1",
+        "fov": "",
+        "playlist": {
+          "url": "./musique/sncf.mp3",
+          "loop": false,
+          "volume": 0.5
+        },
+        "dom": {
+          "id": "scene2",
+          "name": "scene2",
+          "url": "./img/image2.jpg"
+        },
+        "hotspot": [
+          {
+            "id": 0,
+            "name": "Vers Sc3",
+            "transform": {
+              "position": {
+                "x": -1.6981479046085077,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "link",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "eventTarget": {
+              "id": 2
+            }
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "scene3",
+        "fov": "",
+        "playlist": {
+          "url": "",
+          "loop": "",
+          "volume": ""
+        },
+        "dom": {
+          "id": "scene3",
+          "name": "scene3",
+          "url": "./img/image3.jpg"
+        },
+        "hotspot": [
+          {
+            "id": 0,
+            "name": "Info",
+            "transform": {
+              "position": {
+                "x": 1.9047572433093785,
+                "y": 0,
+                "z": 2.995645484969945
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "info",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            }
+          },
+          {
+            "id": 1,
+            "name": "Vers Sc4",
+            "transform": {
+              "position": {
+                "x": 7.892592315735419,
+                "y": 0,
+                "z": -5.816237354590933
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "link",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "eventTarget": {
+              "id": 3
+            }
+          }
+        ]
+      },
+      {
+        "id": "scene4",
+        "name": "scene4",
+        "fov": "",
+        "playlist": {
+          "url": "",
+          "loop": "",
+          "volume": ""
+        },
+        "dom": {
+          "id": "scene4",
+          "name": "scene4",
+          "url": "./img/image4.jpg"
+        },
+        "hotspot": [
+          {
+            "id": 0,
+            "name": "Vers Sc1",
+            "transform": {
+              "position": {
+                "x": 9.892592315735419,
+                "y": 0,
+                "z": -4.816237354590933
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "link",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "eventTarget": {
+              "id": 0
+            }
+          },
+          {
+            "id": 1,
+            "name": "Music",
+            "transform": {
+              "position": {
+                "x": -9.892592315735419,
+                "y": 0,
+                "z": -4.816237354590933
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "geometry": {
+              "type": "music",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "event": {
+              "url": "./musique/sncf.mp3",
+              "volume": 0.5,
+              "loop": false
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
