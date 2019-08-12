@@ -1,74 +1,146 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+   <head>
+       <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-        <title>Babylon.js sample code</title>
+       <title>Babylon.js sample code</title>
 
-        <!-- Babylon.js -->
-        <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script> 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
-        <script src="https://preview.babylonjs.com/ammo.js"></script>
-        <script src="https://preview.babylonjs.com/cannon.js"></script>
-        <script src="https://preview.babylonjs.com/Oimo.js"></script>
-        <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
-        <script src="https://preview.babylonjs.com/earcut.min.js"></script> 
-        <script src="https://preview.babylonjs.com/babylon.js"></script>
-       <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script> 
-        <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-        <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
-        <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
-        <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
-        <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script> 
-        <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
-         <script src="https://code.jquery.com/pep/0.4.3/pep.js"></script> 
-        
-        <style>
-            html, body {
-                overflow: hidden;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
+       <!-- Babylon.js -->
+       <script src="https://code.jquery.com/pep/0.4.2/pep.min.js"></script>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+       <script src="https://preview.babylonjs.com/ammo.js"></script>
+       <script src="https://preview.babylonjs.com/cannon.js"></script>
+       <script src="https://preview.babylonjs.com/Oimo.js"></script>
+       <script src="https://preview.babylonjs.com/gltf_validator.js"></script>
+       <script src="https://preview.babylonjs.com/earcut.min.js"></script>
+       <script src="https://preview.babylonjs.com/babylon.js"></script>
+       <script src="https://preview.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+       <script src="https://preview.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+       <script src="https://preview.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+       <script src="https://preview.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+       <script src="https://preview.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+       <script src="https://preview.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+       <script src="https://preview.babylonjs.com/gui/babylon.gui.min.js"></script>
+      
 
-            #renderCanvas {
-                width: 100%;
-                height: 100%;
-                touch-action: none;
-            }
-        </style>
-        <link rel="stylesheet" media="screen" href="https://fontlibrary.org/face/oxanium" type="text/css"/> 
-    </head>
-<body >
-    <canvas id="renderCanvas"></canvas>
-    <script src="TweenLite.js"></script>
+       <style>
+         
+           html, body {
+               overflow: hidden;
+               width: 100%;
+               height: 100%;
+               margin: 0;
+               padding: 0;
+               color: rgba(255, 255, 255, 0.77);
+           }
+           #renderCanvas {
+               width: 100%;
+               height: 100%;
+               touch-action: none;
+               background-color: rgb(255, 255, 255);
+               
+           }
+         
+     
+       </style>
+       <link rel="stylesheet" href="style.css">
+   </head>
+<body>
+     
+
+   
+   <script  src="data.json"></script>
+   <script  src="TweenLite.js"></script>
+   <script src="./ajax.js"></script>
+   <canvas id="renderCanvas"></canvas>
     <script>
-        var canvas = document.getElementById("renderCanvas");
-        {
-        let scene;
-        let vrHelper;
-        let camera;
-        var matIconeVideo,matHyperLink,matLink,matImage,matImageDisplay,matVideo,matClose,matreset,matplayPause,videoTexture;
-        var createScene = function () {
+   
+    var canvas = document.getElementById("renderCanvas");
+   
+    
+     
+
+
+   
+    
+    // Fonction qui compte le nombre d'élément du chemin. Ex: nb hotspot etc...
+    var getNb = function(chemin)
+    {   
+    // on test si l'objet est un tableau
+    if (Array.isArray(chemin))
+    {
+        return chemin.length;
+    }
+    else
+    {
+        return console.error(chemin," n'est pas un tableau");
+    }
+}
+    ajaxGet("./data.json", (reponse)=> {
+
+        var data = JSON.parse(reponse);
         
-        /*------ Initialisation Scène & Camera ------*/  
-          
+   
+        var scene;
+        var vrHelper;
+        var camera;
+        var matIconeVideo,matHyperLink,matLink,matImage,matImageDisplay,matVideo,matClose,matreset,matplayPause,videoTexture,matInfo,matMusic, matAccel;   
+
+        
+    // Cette classe va stocker la caméra, la lumière, les matériaux, la VR ainsi que l'objet scene.
+
+    class Scene{
+    
+    constructor(id)
+    {
+    
+       
         scene = new BABYLON.Scene(engine);
+       // création de la caméra + caméra VR
+         this.createCamera();
+         this.createCameraVR();
+        
+       // Initialisation des matériaux
+       
+        this.CreateMateriaux();
+
+        // On ajoute les photos dans le cache afin de charger plus rapidement les photos entre les scènes
+        this.preLoadingPhoto();
+
+        // Création de la lumière
+        this.light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+        this.light.intensity = 1.5;
+        
+        // Création de la photo 
+        
+        this.createPhoto(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
+       
+        return this;
+    }
+
+    createPhoto(name,url,id)
+    {    
+        // Création de la photo 
+         new Photo(name,url,id);
+    }
+
+    createCamera()
+    {
+        // Construit la caméra associée à la scene
         camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3 (0,0,-5), scene)
         camera.attachControl(canvas, true);
-        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-        light.intensity = 1.5;
-        
-        /*---------Ajout de la VR-------------------*/     
-        
+      
+    }
+
+    createCameraVR()
+    {
+        //Construit la VR associé à la scène
          vrHelper = scene.createDefaultVRExperience();
-        
         vrHelper.displayGaze = true ;
         vrHelper.displayLaserPointer = true;
         vrHelper.changeGazeColor(new BABYLON.Color3(1,1,1));
+        // On autorise les intéractions avec le "gaze"
         vrHelper.enableInteractions();
-        
         vrHelper.onEnteringVR.add(()=> {
             setTimeout(()=>{scene.getEngine().isPointerLock = true},1000);
         })
@@ -77,14 +149,17 @@
             scene.getEngine().isPointerLock = false;
         })
         
-        //----------------------MATERIAUX--------------------------------------------------------------
+    }
+
+    CreateMateriaux()
+    {
             matIconeVideo = new BABYLON.StandardMaterial( scene);
             matIconeVideo.diffuseTexture = new BABYLON.Texture("icon/iconeVideo.png",scene,true,false);    
             matIconeVideo.diffuseTexture.hasAlpha = true;
             matIconeVideo.backFaceCulling = false;
 
             matHyperLink = new BABYLON.StandardMaterial( scene);
-            matHyperLink.diffuseTexture = new BABYLON.Texture("img/circle_red.jpg",scene,true,false);     
+            matHyperLink.diffuseTexture = new BABYLON.Texture("img/circle_red.png",scene,true,false);     
             matHyperLink.diffuseTexture.hasAlpha = true;
             matHyperLink.backFaceCulling = false;
 
@@ -92,6 +167,11 @@
             matLink.diffuseTexture = new BABYLON.Texture("icon/link.png",scene,true,false);
             matLink.diffuseTexture.hasAlpha = true;
             matLink.backFaceCulling = false;
+
+            matAccel = new BABYLON.StandardMaterial( scene);
+            matAccel.diffuseTexture = new BABYLON.Texture("icon/accelerer.png",scene,true,false);
+            matAccel.diffuseTexture.hasAlpha = true;
+            matAccel.backFaceCulling = false;
 
             matImage = new BABYLON.StandardMaterial( scene);
             matImage.diffuseTexture = new BABYLON.Texture("img/chat2.jpg",scene,true,false);    
@@ -114,1888 +194,2304 @@
             videoTexture.video.pause();
 
             matClose = new BABYLON.StandardMaterial("dog", scene);
-            matClose.diffuseTexture = new BABYLON.Texture("icon/close.png", scene);
+            matClose.diffuseTexture = new BABYLON.Texture("icon/close.png", scene, true,false);
             matClose.diffuseTexture.hasAlpha = true;
 
             matreset = new BABYLON.StandardMaterial("dog", scene);
-            matreset.diffuseTexture = new BABYLON.Texture("icon/reset.jpg", scene, true, false);
+            matreset.diffuseTexture = new BABYLON.Texture("icon/reset.png", scene, true, false);
             matreset.diffuseTexture.hasAlpha = true;
 
             matplayPause = new BABYLON.StandardMaterial("dog", scene);
             matplayPause.diffuseTexture = new BABYLON.Texture("icon/play_pause.png", scene);
             matplayPause.diffuseTexture.hasAlpha = true;
-            let dome = new BABYLON.PhotoDome(
-                "scene1",
-                "./img/image1.jpg",
-                {
-                    resolution:32,
-                    size: 1000,
-                    faceForward: false
-                },
-                scene
-            )
-            dome.dispose();
-            dome = null;
-          dome = new BABYLON.PhotoDome(
-                "scene1",
-                "./img/image2.jpg",
-                {
-                    resolution:32,
-                    size: 1000,
-                    faceForward: false
-                },
-                scene
-            )
-            dome.dispose();
-            dome = null;
-            dome = new BABYLON.PhotoDome(
-                "scene1",
-                "./img/image3.jpg",
-                {
-                    resolution:32,
-                    size: 1000,
-                    faceForward: false
-                },
-                scene
-            )
-            dome.dispose();
-            dome = null;
-            dome = new BABYLON.PhotoDome(
-                "scene1",
-                "./img/image4.jpg",
-                {
-                    resolution:32,
-                    size: 1000,
-                    faceForward: false
-                },
-                scene
-            )
-            dome.dispose();
-            dome = null;
-        /*---------Création de la première photo ---------------*/
-        createPhoto1();
-        
-        
-        return scene;
-        };
 
-        var createPhoto1 = function()
+            matMusic = new BABYLON.StandardMaterial("dog", scene);
+            matMusic.diffuseTexture = new BABYLON.Texture("icon/music.jpg", scene,true, false);
+            matMusic.diffuseTexture.hasAlpha = true;
+    }
+
+    preLoadingPhoto()
+    {
+        let n = getNb(data.Story.Scene)
+        // On va créé une première fois chaque dome puis le détruire => avoir les photos dans le cache 
+        //                                                           => chargement entre les scènes plus rapides
+        for (var i=0; i<n; i++)
         {
             let dome = new BABYLON.PhotoDome(
-                "scene1",
-                "./img/image1.jpg",
+                data.Story.scenes[i].dom.name,
+                data.Story.scenes[i].dom.url,
                 {
-                    resolution:32,
+                    resolution: 32,
                     size: 1000,
                     faceForward: false
                 },
-                scene
+                this.scene
             )
-            
-        
-        //---------------------------------MESHES----------------------------------------
+            dome.dispose();
+            dome = null;
+        }
+    }
 
-           //--------------------Link to switch scene--------------------------------
+}
 
-        var planGUILink = BABYLON.Mesh.CreatePlane("linkGui", 3);
-        var planLink = BABYLON.Mesh.CreateDisc("link", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        planLink.position = new BABYLON.Vector3(-7.856177494195498, -7.575172191173865e-26,-11.002394108127689)
-        
-        planLink.material = matLink;
-        planGUILink.position = planLink.position.add(planLink.position.subtract(camera.position).normalize().scale(0.5));
+// Cette classe va contenir le dome (photo 360°)
 
+class Photo{
+    constructor(name,url,id)
+    {
+        this.dome = new BABYLON.PhotoDome(
+            name,
+            url,
+        {
+            resolution: 32,
+            size: 1000,
+            faceForward: false
+        },
+        scene
+        );
         
+        // On test si dans le fichier JSON, on a attribué une valeur au fov de la caméra pour cette scène. 
+        // Si rien n'est mis dans le JSON alors on ne rentre pas dans la condition
+        // valeur par défaut : 0.8. Les valeurs sont en radians.
+       if(data.Story.scenes[id].fov)
+       {
+           camera.fov =  data.Story.scenes[id].fov
+       }
+       if(data.Story.scenes[id].playlist.url)
+       {
+         this.music  = new BABYLON.Sound("music", data.Story.scenes[id].playlist.url ,
+    scene, null, { loop: data.Story.scenes[id].playlist.loop , autoplay: true, volume: data.Story.scenes[id].playlist.volume   });
+       }
+        
+    // Création des Hotspots 
+   new  Hotspots(id,this); 
+    
+        return this;
+ 
+    }
+    destructionPhoto()
+    {
+        if(this.music)
+        {
+            this.music.dispose();
+            this.music = null;
+            delete this.music;
+        }
+        this.dome.dispose();
+        this.dome = null;
+        delete this.dome;
+        delete this;
+    }
+}
+
+// Cette classe va contenir tous les hotspots de la scène.
+class Hotspots
+{
+    constructor(id,Photo)
+    {
+        
+        // nombre de HotSpots dans la scène
+        this.n = getNb(data.Story.scenes[id].hotspot);
+        // id : n° de la scène
+        this.p = id;
        
-          //---------------------------HyperLink----------------------------------
+        this.hotspot = new Array(this.n);  // contient les plans des hotspots
+        this.hotspotGUI = new Array(this.n);  // contient les plans de hotspots gui : là où on affiche les étiquettes (derrière le hotspot)
+        this.advancedTexture = new Array(this.n) // contient l'ensemble des advancedTexture liés aux meshGUI
+        this.rect = new Array(this.n); // contient l'ensemble des étiquettes
+        this.label = new Array(this.n); // contient l'ensemble du texte des étiquettes
+        this.plan = new Array(this.n); // contient les plans pour afficher vidéos/images de la scène
+        this.dir = new Array(this.n); // contient l'ensemble des directions des hotspots, où ils doivent vers la caméra
+        this.dirGUI = new Array(this.n); // contient l'ensemble des directions des hotspots GUI, où ils doivent vers la caméra
+        this.close = new Array(this.n); // contient l'ensemble des boutons closes
+        this.play = new Array(this.n); // contient l'ensemble des boutons plays
+        this.reset = new Array(this.n); // contient l'ensemble des boutons reset
+        this.rect2 = new Array(this.n); // contient l'ensemble des rectangles gui affiché après un trigger du hotspot (ex: hyperLink)
+        this.label2 = new Array(this.n) // contient l'ensemble des étiquettes liées au rect2 (ex: label de l'hyperlink)
+        this.sv = new Array(this.n); // contient les différents scrollViewer du hotspot info
+        this.text = new Array(this.n); // contient les différents textes des points info
+        this.music = new Array(this.n); // contient les différentes musiques.
+        this.accel = new Array(this.n) // contient les boutons accel, qui accélère le défilement du texte du point info.
+        this.createHotpots();
+        
+        this.Photo = Photo;
 
-        var planGUIHyperLink = BABYLON.Mesh.CreatePlane("hyperlinkGui", 3);
-        var planHyperLink = BABYLON.Mesh.CreateDisc("Hyperlink", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        planHyperLink.position = new BABYLON.Vector3(-7.21516768075967,0,-14.081954471594145)
-        
-        planHyperLink.material = matHyperLink;
-        planGUIHyperLink.position = planHyperLink.position.add(planHyperLink.position.subtract(camera.position).normalize().scale(0.5));
+        // Orientation des hotspots vers la caméra
+        this.observer =scene.onBeforeRenderObservable.add(()=>
+        {
+            this.Observer();
+        });
 
-        var closeHyperLink = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
-        closeHyperLink.position = planGUIHyperLink.position.add(planGUIHyperLink.position.subtract(camera.position).normalize().scale(-0.5));
-        closeHyperLink.position = closeHyperLink.position.add(new BABYLON.Vector3(0,1.5,1.5))
-        
-        closeHyperLink.isVisible = false;
-        closeHyperLink.scaling.x = 0.25;
-        closeHyperLink.scaling.y = 0.25;
-        closeHyperLink.material = matClose;
-
-            //----------------------------Image------------------------------------------
-
-        var planGUIImage = BABYLON.Mesh.CreatePlane("hyperlinkGui", 3);
-        var planImage = BABYLON.Mesh.CreateDisc("Hyperlink", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        planImage.position = new BABYLON.Vector3(-12.377351007646315,-1.4211785528481757e-24,-9.052478645879221)
-        
-        planImage.material = matImage;
-        planGUIImage.position = planImage.position.add(planImage.position.subtract(camera.position).normalize().scale(0.5));
-        
-        
-        var ImageDisplay = BABYLON.Mesh.CreatePlane("Image", 4);
-        ImageDisplay.position = planImage.position.add(new BABYLON.Vector3(0,3,0));
-        ImageDisplay.scaling.x = 1920/1080;
-        ImageDisplay.material = matImageDisplay;
-        ImageDisplay.isVisible = false;
-        
-        var closeImage = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
-        closeImage.position = ImageDisplay.position.add(ImageDisplay.position.subtract(camera.position).normalize().scale(-0.5));
-        closeImage.position = closeImage.position.add(new BABYLON.Vector3(0,2.3,3))
+     // On crée les triggers
+       new Trigger(this);
+        return this;
        
-        closeImage.isVisible = false;
-        closeImage.scaling.x = 0.25;
-        closeImage.scaling.y = 0.25;
-        closeImage.material = matClose;
-        
-        
+    }
+  
+    createHotpots()
+    {
+        for(var i = 0; i<this.n;i++)
+        {
+           if(data.Story.scenes[this.p].hotspot[i].geometry.type == "link")
+           {
+               
+                this.addLink(i);
+                
+                   
+           }
+           else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "info")
+           {
+              this.addInfo(i);
+              
+           }
+           else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "video")
+           {
+               this.addVideo(i);
+               
+               
+           }
+           else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "hyperlink")
+           {
+              this.addHyperlink(i);
+               
+           }
+           else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "music")
+           {
+               this.addMusic(i);
+               
+               
+           }
+           else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "image")
+           {
+               this.addImage(i);
+               
+           }
+           
+           
+           
+        }
+      
+    }
 
-            //--------------------------Video-----------------------------------------------
-        var planGUIVideo = BABYLON.Mesh.CreatePlane("hyperlinkGui", 3);
-        var planVideo = BABYLON.Mesh.CreateDisc("Hyperlink", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        planVideo.position = new BABYLON.Vector3(-11.686181615057734,0,-5.300905990659318)
-        planVideo.material = matIconeVideo;
+    addLink(i)
+    {
+
+        // On crée le hotspot avec un plan derrière (pour l'étiquette), une ellipse devant (hotspot)
+        this.hotspotGUI[i] = new BABYLON.Mesh.CreatePlane("linkGui", data.Story.scenes[this.p].hotspot[i].geometry.options.size);
+        this.hotspot[i] = new BABYLON.Mesh.CreateDisc("link", data.Story.scenes[this.p].hotspot[i].geometry.options.radius, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
         
-        planGUIVideo.position = planVideo.position.add(planVideo.position.subtract(camera.position).normalize().scale(0.5));
-        var Video = BABYLON.Mesh.CreatePlane("plane1", 3, scene);
-        Video.position = planVideo.position.add(planVideo.position.subtract(camera.position).normalize().scale(-0.5));
+        // Position des meshes
+        this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
+        this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
         
+        this.hotspot[i].material = matLink;
+
+        // On crée la texture dynamique qui va permettre d'ajouter des éléments GUI au mesh de derrière
+        this.advancedTexture[i] =  BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(this.hotspotGUI[i]);
         
-         // Attach the video material the a mesh
-        Video.scaling.x = 1920/1080; // set aspect ratio
-        Video.material = matVideo;
-        Video.isVisible = false;
+        // Création de l'étiquette
+        this.rect[i] = new BABYLON.GUI.Rectangle();
+        this.rect[i].width = 0.8;
+        this.rect[i].height = "200px";
+        this.rect[i].cornerRadius = 90;
+        this.rect[i].thickness = 2; 
+        this.rect[i].background = "purple";
+        this.rect[i].top = "-350px";
+        this.rect[i].isVisible = false;
+        this.advancedTexture[i].addControl(this.rect[i]);
+
+        // Création du texte de l'étiquette
+        this.label[i] = new BABYLON.GUI.TextBlock();
+        this.label[i].text = data.Story.scenes[this.p].hotspot[i].name;
+        this.label[i].fontSize = "150";
+        this.label[i].color = "white";
+        this.rect[i].addControl(this.label[i]);
+        
+    }
+
+    addVideo(i)
+    {
+        // On crée le hotspot avec un plan derrière (pour l'étiquette), une ellipse devant (hotspot)
+        this.hotspotGUI[i] = new BABYLON.Mesh.CreatePlane("linkGui", data.Story.scenes[this.p].hotspot[i].geometry.options.size);
+        this.hotspot[i] = new BABYLON.Mesh.CreateDisc("link", data.Story.scenes[this.p].hotspot[i].geometry.options.radius, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+        
+        // Position des meshes
+        this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
+        this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
+        
+        // Création du plan où l'on va projeter la vidéo
+        this.plan[i] = BABYLON.Mesh.CreatePlane("plane1", 3, scene);
+        
+        // Le parent du plan vidéo est le hotspot (ellipse où il y l'image)
+        // Cela permet d'avoir toujour le même placement des autres boutons, plans par rapport au hotspot, ce hotspot devient le nouvel origine du repère
+        this.plan[i].parent = this.hotspot[i];
+        this.plan[i].position = new BABYLON.Vector3(0,0,-0.5)
+        
+        // Attach the video material to the a mesh
+        this.plan[i].scaling.x = 1920/1080; // set aspect ratio
+        this.plan[i].material = matVideo;
+        this.plan[i].isVisible = false;
         videoTexture.video.pause();
         videoTexture.video.loop = false;
 
-        var closeVideo = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
-        closeVideo.position = Video.position.add(Video.position.subtract(camera.position).normalize().scale(-0.5));
-        closeVideo.position = closeVideo.position.add(new BABYLON.Vector3(0,1.8,2.2))
-        closeVideo.isVisible = false;
-        closeVideo.scaling.x = 0.25;
-        closeVideo.scaling.y = 0.25;
-        
-        closeVideo.material = matClose;
 
-        var playPause = new BABYLON.Mesh.CreatePlane("playPause",2,scene);
-        playPause.position = Video.position.add(Video.position.subtract(camera.position).normalize().scale(-0.5));
-        playPause.position = playPause.position.add(new BABYLON.Vector3(0,-2,0))
-        playPause.isVisible = false;
-        playPause.scaling.x = 0.40;
-        playPause.scaling.y = 0.40;
-        playPause.hoverCursor = "pointer"
-        
-        playPause.material = matplayPause;
-
-       // var reset = new BABYLON.Mesh.CreatePlane("reset",2,scene);
-        var reset = BABYLON.Mesh.CreateDisc("Hyperlink", 1, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        reset.position = Video.position.add(Video.position.subtract(camera.position).normalize().scale(-0.5));
-        reset.position = reset.position.add(new BABYLON.Vector3(0,-2,2))
-        reset.isVisible = false;
-        reset.scaling.x = 0.40;
-        reset.scaling.y = 0.40;
-        
-        reset.material = matreset;
-            
-        let observer= scene.onBeforeRenderObservable.add(()=>
-        {
-            var camPos = scene.activeCamera == vrHelper.webVRCamera ? vrHelper.webVRCamera.devicePosition : scene.activeCamera.position
-            var dir1 = planGUILink.position.subtract(scene.activeCamera.position)
-            var dir1_1 = planLink.position.subtract(scene.activeCamera.position)
-            var dir2 = planGUIHyperLink.position.subtract(scene.activeCamera.position)
-            var dir2_1 = planHyperLink.position.subtract(scene.activeCamera.position)
-            var dir2_2 = closeHyperLink.position.subtract(scene.activeCamera.position)
-            var dir3 = planGUIImage.position.subtract(scene.activeCamera.position)
-            var dir3_1 = planImage.position.subtract(scene.activeCamera.position)
-            var dir3_2 = ImageDisplay.position.subtract(scene.activeCamera.position)
-            var dir3_3 = closeImage.position.subtract(scene.activeCamera.position)
-            var dir4 = planGUIVideo.position.subtract(scene.activeCamera.position)
-            var dir4_1 = planVideo.position.subtract(scene.activeCamera.position)
-            var dir4_2 = Video.position.subtract(scene.activeCamera.position)
-            var dir4_3 = closeVideo.position.subtract(scene.activeCamera.position)
-            var dir4_4 = playPause.position.subtract(scene.activeCamera.position)
-            var dir4_5 = reset.position.subtract(scene.activeCamera.position)
-            planGUILink.lookAt(planGUILink.position.add(dir1))
-            planLink.lookAt(planLink.position.add(dir1_1))
-            planGUIHyperLink.lookAt(planGUIHyperLink.position.add(dir2))
-            planHyperLink.lookAt(planHyperLink.position.add(dir2_1))
-            closeHyperLink.lookAt(closeHyperLink.position.add(dir2_2))
-            planGUIImage.lookAt(planGUIImage.position.add(dir3))
-            planImage.lookAt(planImage.position.add(dir3_1))
-            ImageDisplay.lookAt(ImageDisplay.position.add(dir3_2))
-            closeImage.lookAt(closeImage.position.add(dir3_3))
-            planGUIVideo.lookAt(planGUIVideo.position.add(dir4))
-            planVideo.lookAt(planVideo.position.add(dir4_1))
-            Video.lookAt(Video.position.add(dir4_2))
-            closeVideo.lookAt(closeVideo.position.add(dir4_3))
-            playPause.lookAt(playPause.position.add(dir4_4))
-            reset.lookAt(reset.position.add(dir4_5))
-           
-           
-            
-        });
-        
-          
-            
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUILink);
-        var rect1 = new BABYLON.GUI.Rectangle();
-        rect1.width = 0.8;
-        rect1.height = "200px";
-        rect1.cornerRadius = 90;
-        //rect1.color = "white";  //couleur des bordures du rectangle
-        rect1.thickness = 2; 
-        rect1.background = "purple";
-        advancedTexture.addControl(rect1);
-        var label = new BABYLON.GUI.TextBlock();
-        label.text = "Vers sc2";
-        label.fontSize = "150";
-        label.color = "white";
-        rect1.addControl(label);
-        rect1.top = "-350px";
-        rect1.isVisible = false;
+        //Création du bouton close
+        this.close[i] = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
        
-
-       var advancedTextureHyperLink = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUIHyperLink);
-        var rectHyperLink = new BABYLON.GUI.Rectangle();
-        rectHyperLink.width = 0.8;
-        rectHyperLink.height = "200px";
-        rectHyperLink.cornerRadius = 90;
-        //rectHyperLink.color = "white";  //couleur des bordures du rectangle
-        rectHyperLink.thickness = 2; 
-        rectHyperLink.background = "purple";
-        advancedTextureHyperLink.addControl(rectHyperLink);
-        var labelHyperLink = new BABYLON.GUI.TextBlock();
-        labelHyperLink.text = "HyperLink";
-        labelHyperLink.fontSize = "150";
-        labelHyperLink.color = "white";
-        rectHyperLink.addControl(labelHyperLink);
-        rectHyperLink.top = "-350px";
-        rectHyperLink.isVisible = false;
-        var rectHyperLinkHtml = new BABYLON.GUI.Rectangle();
-            var labelHyperLinkHtml = new BABYLON.GUI.TextBlock();
-            rectHyperLinkHtml.isVisible = false;
-            
-                    
-            rectHyperLinkHtml.width = 1;
-            rectHyperLinkHtml.height = "150px";
-            rectHyperLinkHtml.cornerRadius = 90;
-            rectHyperLinkHtml.thickness = 2;
-            rectHyperLinkHtml.background = "purple";
-            advancedTextureHyperLink.addControl(rectHyperLinkHtml);
-            labelHyperLinkHtml.text = "https://www.google.fr/";
-            labelHyperLinkHtml.fontSize = "100"
-            labelHyperLinkHtml.color = "white"
-            rectHyperLinkHtml.top = "-350px"
-            labelHyperLinkHtml.hoverCursor = "pointer"
-            rectHyperLinkHtml.addControl(labelHyperLinkHtml);
+        this.close[i].parent = this.plan[i];
+        this.close[i].position = new BABYLON.Vector3(1.2,2,0);
+        this.close[i].isVisible = false;
+        this.close[i].scaling.x = 0.15;
+        this.close[i].scaling.y = 0.25;
+        
+        this.close[i].material = matClose;
     
 
-
-
-        var advancedTextureImage = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUIImage);
-        var rectImage = new BABYLON.GUI.Rectangle();
-        rectImage.width = 0.8;
-        rectImage.height = "200px";
-        rectImage.cornerRadius = 90;
-        //rectImage.color = "white";  //couleur des bordures du rectangle
-        rectImage.thickness = 2; 
-        rectImage.background = "purple";
-        advancedTextureImage.addControl(rectImage);
-        var labelImage = new BABYLON.GUI.TextBlock();
-        labelImage.text = "Image";
-        labelImage.fontSize = "150";
-        labelImage.color = "white";
-        rectImage.addControl(labelImage);
-        rectImage.top = "-350px";
-        rectImage.isVisible = false;
-
-
-
-        var advancedTextureVideo = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUIVideo);
-        var rectVideo = new BABYLON.GUI.Rectangle();
-        rectVideo.width = 0.8;
-        rectVideo.height = "200px";
-        rectVideo.cornerRadius = 90;
-        //rectVideo.color = "white";  //couleur des bordures du rectangle
-        rectVideo.thickness = 2; 
-        rectVideo.background = "purple";
-        advancedTextureVideo.addControl(rectVideo);
-        var labelVideo = new BABYLON.GUI.TextBlock();
-        labelVideo.text = "Video";
-        labelVideo.fontSize = "150";
-        labelVideo.color = "white";
-        rectVideo.addControl(labelVideo);
-        rectVideo.top = "-350px";
-        rectVideo.isVisible = false;
+        // Création du bouton play
+        this.play[i] = new BABYLON.Mesh.CreatePlane("playPause",2,scene);
        
+        this.play[i].parent = this.plan[i];
+        this.play[i].position = new BABYLON.Vector3(0,-2.2,0);
+        this.play[i].isVisible = false;
+        this.play[i].scaling.x = 0.25;
+        this.play[i].scaling.y = 0.40;
+        this.play[i].hoverCursor = "pointer"
         
+        this.play[i].material = matplayPause;
+
         
-        let out = true;
-        var timerin;
-        var timerout;
-        var firstTimeIn = true;
-        var play = false;
-        var display = false;
+        //Création du bouton reset
+        this.reset[i] = BABYLON.Mesh.CreateDisc("Hyperlink", 1, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+        this.reset[i].parent = this.plan[i];
+        this.reset[i].position = new BABYLON.Vector3(1.2,-2.2,0);
+        this.reset[i].isVisible = false;
+        this.reset[i].scaling.x = 0.25;
+        this.reset[i].scaling.y = 0.40;
         
-      
-      //--------Action Managers------------------------------
+        this.reset[i].material = matreset;
+
+        this.hotspot[i].material = matIconeVideo;
+
+        // Création de la texture dynamique
+        this.advancedTexture[i] =  BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(this.hotspotGUI[i]);
         
-        planLink.actionManager = new BABYLON.ActionManager(scene);
-        planHyperLink.actionManager = new BABYLON.ActionManager(scene);
-        planImage.actionManager = new BABYLON.ActionManager(scene);
-        planVideo.actionManager = new BABYLON.ActionManager(scene);
-        closeVideo.actionManager = new BABYLON.ActionManager(scene);
-        closeHyperLink.actionManager = new BABYLON.ActionManager(scene);
-        closeImage.actionManager = new BABYLON.ActionManager(scene);
-        reset.actionManager = new BABYLON.ActionManager(scene);
-        playPause.actionManager = new BABYLON.ActionManager(scene);
+        // Création de l'étiquette
+        this.rect[i] = new BABYLON.GUI.Rectangle();
+        this.rect[i].width = 0.8;
+        this.rect[i].height = "200px";
+        this.rect[i].cornerRadius = 90;
+        this.rect[i].thickness = 2; 
+        this.rect[i].background = "purple";
+        this.rect[i].top = "-350px";
+        this.rect[i].isVisible = false;
+        this.advancedTexture[i].addControl(this.rect[i]);
 
-     // ------------------TRIGGERS------------------------------------------------
-
-           //-------------Link------------------------------------------   
-        planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-                rect1.isVisible = true;
-                TweenLite.to(planLink.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-                
-            timerin = setTimeout(()=> {
-                
-                scene.onBeforeRenderObservable.remove(observer);
-                
-                 out = null;
-                 timerin = null;
-                 timerout = null;
-                 firstTimeIn = null;
-                 play = null;
-                 display = null;
-
-
-                closeVideo.actionManager.dispose();
-                closeVideo.actionManager = null;
-                closeVideo.dispose();
-                closeVideo = null;
-
-                closeHyperLink.actionManager.dispose();
-                closeHyperLink.actionManager = null;
-                closeHyperLink.dispose();
-                closeHyperLink = null;
-
-                closeImage.actionManager.dispose();
-                closeImage.actionManager = null;
-                closeImage.dispose();
-                closeImage = null;
-
-                reset.actionManager.dispose();
-                reset.actionManager = null;
-                reset.dispose();
-                reset = null;
-
-                playPause.actionManager.dispose();
-                playPause.actionManager = null;
-                playPause.dispose();
-                playPause = null;
-
-
-                label.dispose();
-                label = null;
-                rect1.dispose();
-                rect1 = null;
-                advancedTexture.dispose();
-                advancedTexture = null;
-                planGUILink.dispose();
-                planGUILink = null;
-                planLink.actionManager.dispose();
-                planLink.actionManager = null;
-                planLink.dispose();
-                planLink = null;
-                
-                labelHyperLink.dispose();
-                labelHyperLink = null;
-                rectHyperLink.dispose();
-                rectHyperLink = null;
-                labelHyperLinkHtml.dispose();
-                labelHyperLinkHtml = null;
-                rectHyperLinkHtml.dispose();
-                rectHyperLinkHtml = null;
-                advancedTextureHyperLink.dispose();
-                advancedTextureHyperLink = null;
-                planGUIHyperLink.dispose();
-                planGUIHyperLink = null;
-                planHyperLink.actionManager.dispose();
-                planHyperLink.actionManager = null;
-                planHyperLink.dispose();
-                planHyperLink = null;
-                
-                labelImage.dispose();
-                labelImage = null;
-                rectImage.dispose();
-                rectImage = null;
-                advancedTextureImage.dispose();
-                advancedTextureImage = null;
-                planGUIImage.dispose();
-                planGUIImage = null;
-                ImageDisplay.dispose();
-                ImageDisplay = null;
-                planImage.actionManager.dispose();
-                planImage.actionManager = null;
-                planImage.dispose();
-                planImage = null;
-                
-
-                labelVideo.dispose();
-                labelVideo = null;
-                rectVideo.dispose();
-                rectVideo = null;
-                advancedTextureVideo.dispose();
-                advancedTextureVideo = null;
-                planGUIVideo.dispose();
-                planGUIVideo = null;
-                Video.dispose();
-                Video = null;
-                planVideo.actionManager.dispose();
-                planVideo.actionManager = null;
-                planVideo.dispose();
-                planVideo = null;
-                
-               dome.dispose();
-               dome = null;
-
-               createPhoto2();
-            }, 3000)
-        }
-            firstTimeIn = false;
-                
+        // Création du texte de l'étiquette
+         this.label[i] = new BABYLON.GUI.TextBlock();
+        this.label[i].text = data.Story.scenes[this.p].hotspot[i].name;
+        this.label[i].fontSize = "150";
+        this.label[i].color = "white";
+        this.rect[i].addControl(this.label[i]);
         
-            }));
-           planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                setTimeout(()=>
-                {
-                
-                scene.onBeforeRenderObservable.remove(observer);
-                
-                 out = null;
-                 timerin = null;
-                 timerout = null;
-                 firstTimeIn = null;
-                 play = null;
-                 display = null;
-
-
-                closeVideo.actionManager.dispose();
-                closeVideo.actionManager = null;
-                closeVideo.dispose();
-                closeVideo = null;
-
-                closeHyperLink.actionManager.dispose();
-                closeHyperLink.actionManager = null;
-                closeHyperLink.dispose();
-                closeHyperLink = null;
-
-                closeImage.actionManager.dispose();
-                closeImage.actionManager = null;
-                closeImage.dispose();
-                closeImage = null;
-
-                reset.actionManager.dispose();
-                reset.actionManager = null;
-                reset.dispose();
-                reset = null;
-
-                playPause.actionManager.dispose();
-                playPause.actionManager = null;
-                playPause.dispose();
-                playPause = null;
-
-
-                label.dispose();
-                label = null;
-                rect1.dispose();
-                rect1 = null;
-                advancedTexture.dispose();
-                advancedTexture = null;
-                planGUILink.dispose();
-                planGUILink = null;
-                planLink.actionManager.dispose();
-                planLink.actionManager = null;
-                planLink.dispose();
-                planLink = null;
-                
-                labelHyperLink.dispose();
-                labelHyperLink = null;
-                rectHyperLink.dispose();
-                rectHyperLink = null;
-                labelHyperLinkHtml.dispose();
-                labelHyperLinkHtml = null;
-                rectHyperLinkHtml.dispose();
-                rectHyperLinkHtml = null;
-                advancedTextureHyperLink.dispose();
-                advancedTextureHyperLink = null;
-                planGUIHyperLink.dispose();
-                planGUIHyperLink = null;
-                planHyperLink.actionManager.dispose();
-                planHyperLink.actionManager = null;
-                planHyperLink.dispose();
-                planHyperLink = null;
-                
-                labelImage.dispose();
-                labelImage = null;
-                rectImage.dispose();
-                rectImage = null;
-                advancedTextureImage.dispose();
-                advancedTextureImage = null;
-                planGUIImage.dispose();
-                planGUIImage = null;
-                ImageDisplay.dispose();
-                ImageDisplay = null;
-                planImage.actionManager.dispose();
-                planImage.actionManager = null;
-                planImage.dispose();
-                planImage = null;
-                
-
-                labelVideo.dispose();
-                labelVideo = null;
-                rectVideo.dispose();
-                rectVideo = null;
-                advancedTextureVideo.dispose();
-                advancedTextureVideo = null;
-                planGUIVideo.dispose();
-                planGUIVideo = null;
-                Video.dispose();
-                Video = null;
-                planVideo.actionManager.dispose();
-                planVideo.actionManager = null;
-                planVideo.dispose();
-                planVideo = null;
-                
-               dome.dispose();
-               dome = null;
-
-                createPhoto2();
-
-                },500)
-                
-        
-            }));
-            planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                firstTimeIn = true;
-                
-                TweenLite.to(planLink.scaling,0.5,{x: 1, y:1, z: 1})
-                setTimeout(()=>{rect1.isVisible = false},200);
-                
-               
-                    },10)
-               
-        
-            }));
-
-            //------------------Hyperlink-----------------------
-            
-            planHyperLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-                rectHyperLink.isVisible = true;
-            
-            TweenLite.to(planHyperLink.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-            timerin = setTimeout(()=> {
-                out = true;
-                firstTimeIn = true;
-                rectHyperLink.isVisible = false;
-                rectHyperLinkHtml.isVisible = true;
-                closeHyperLink.isVisible = true;
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           planHyperLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                out = true;
-                firstTimeIn = true;
-                rectHyperLink.isVisible = false;
-                rectHyperLinkHtml.isVisible = true;
-                closeHyperLink.isVisible = true;
-        
-            }));
-            planHyperLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                firstTimeIn = true;
-                TweenLite.to(planHyperLink.scaling,0.5,{x: 1, y:1, z: 1})
-                
-                setTimeout(()=>{rectHyperLink.isVisible = false;},400);
-                
-               
-                    },10)
-               
-        
-            }));
-
-            labelHyperLinkHtml.onPointerEnterObservable.add(()=>
-            {
-                labelHyperLinkHtml.color = "blue"
-                if(!out)
-                {
-                    clearTimeout(timerout);  
-                }
-                out = false;
-                
-               if(firstTimeIn)
-               {
-                timerin = setTimeout(()=> {
-                
-                out = true; // on remet le pointeur à l'extérieur comme ça on n'est pas obligé de ressortir du GUI si on veut select à nouveau le GUI
-                firstTimeIn = true; // de même
-                labelHyperLinkHtml.color = "white"
-                window.open(labelHyperLinkHtml.text);
-            }, 2000)}
-            firstTimeIn = false;
-            })
-            labelHyperLinkHtml.onPointerOutObservable.add(()=>
-            {
-                labelHyperLinkHtml.color = "white"
-                timerout = setTimeout(()=>{
-                out = true;
-                firstTimeIn = true;
-               clearTimeout(timerin);
-                }, 10)
-            })
-            labelHyperLinkHtml.onPointerClickObservable.add(()=>
-            {
-                window.open(labelHyperLinkHtml.text);
-                labelHyperLinkHtml.color = "white"
-                clearTimeout(timerin);
-                out = true;
-                firstTimeIn = true;
-            }) 
-
-            closeHyperLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-            
-            TweenLite.to(closeHyperLink.scaling,0.5,{x: 0.5, y:0.5, z: 0.25})
-            timerin = setTimeout(()=> {
-                
-                closeHyperLink.isVisible = false;
-                rectHyperLinkHtml.isVisible = false;
-               out = true;
-                firstTimeIn = true;
-                display = false;
-                
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           closeHyperLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                closeHyperLink.isVisible = false;
-                rectHyperLinkHtml.isVisible = false;
-                out = true;
-                firstTimeIn = true;
-                display = false;
-        
-            }));
-            closeHyperLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                    TweenLite.to(closeHyperLink.scaling,0.5,{x: 0.25, y:0.25, z: 0.25});
-               
-                    },10)
-               
-            }));
-
-            //----------------------Image-------------------------------
-            planImage.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-                rectImage.isVisible = true;
-            
-            TweenLite.to(planImage.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-            timerin = setTimeout(()=> {
-                out = true;
-                firstTimeIn = true;
-                if(!display)
-                {
-                    rectImage.isVisible = false;
-                    ImageDisplay.isVisible = true;
-                    display = !display;
-                    closeImage.isVisible = true;
-                }
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           planImage.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                out = true;
-                firstTimeIn = true;
-                if(!display)
-                {
-                    rectImage.isVisible = false;
-                    ImageDisplay.isVisible = true;
-                    closeImage.isVisible = true;
-                    display = !display;
-                }
-        
-            }));
-            planImage.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                firstTimeIn = true;
-                TweenLite.to(planImage.scaling,0.5,{x: 1, y:1, z: 1})
-                
-                setTimeout(()=>{rectImage.isVisible = false;},400);
-                
-               
-                    },10)
-               
-            }));
-
-            closeImage.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-            
-            TweenLite.to(closeImage.scaling,0.5,{x: 0.5, y:0.5, z: 0.25})
-            timerin = setTimeout(()=> {
-                
-                closeImage.isVisible = false;
-                ImageDisplay.isVisible = false;
-               out = true;
-                firstTimeIn = true;
-                display = false;
-                
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           closeImage.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                closeImage.isVisible = false;
-                ImageDisplay.isVisible = false;
-                out = true;
-                firstTimeIn = true;
-                display = false;
-        
-            }));
-            closeImage.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                    TweenLite.to(closeImage.scaling,0.5,{x: 0.25, y:0.25, z: 0.25});
-               
-                    },10)
-               
-            }));
-
-            //----------------------Video-------------------------------
-            planVideo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-                rectVideo.isVisible = true;
-            
-            TweenLite.to(planVideo.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-            timerin = setTimeout(()=> {
-                Video.isVisible = true;
-               videoTexture.video.play();
-               reset.isVisible= true;
-               playPause.isVisible = true;
-               closeVideo.isVisible = true;
-               out = true;
-                firstTimeIn = true;
-                play = true;
-                
-            }, 2000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           planVideo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-               Video.isVisible = true;
-               videoTexture.video.play();
-               reset.isVisible= true;
-               playPause.isVisible = true;
-               closeVideo.isVisible = true;
-               out = true;
-                firstTimeIn = true;
-                play = true;
-        
-            }));
-            planVideo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                    TweenLite.to(planVideo.scaling,0.5,{x: 1, y:1, z: 1})
-                
-                setTimeout(()=>{rectVideo.isVisible = false;},400);
-                
-               
-                    },10)
-               
-            }));
-
-            closeVideo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-            
-            TweenLite.to(closeVideo.scaling,0.5,{x: 0.5, y:0.5, z: 0.25})
-            timerin = setTimeout(()=> {
-                videoTexture.video.pause();
-                Video.isVisible = false;
-               reset.isVisible= false;
-               playPause.isVisible = false;
-               closeVideo.isVisible = false;
-               out = true;
-                firstTimeIn = true;
-                play = false;
-                
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           closeVideo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                videoTexture.video.pause();
-                play = false;
-                Video.isVisible = false;
-                reset.isVisible= false;
-                playPause.isVisible = false;
-                closeVideo.isVisible = false;
-                out = true;
-                firstTimeIn = true;
-        
-            }));
-            closeVideo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                    TweenLite.to(closeVideo.scaling,0.5,{x: 0.25, y:0.25, z: 0.25});
-               
-                    },10)
-               
-            }));
-
-            playPause.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-            
-            TweenLite.to(playPause.scaling,0.5,{x: 0.8, y:0.8, z: 0.40})
-            timerin = setTimeout(()=> {
-                if(play)
-                {
-                    videoTexture.video.pause();
-                    
-                }
-                else
-                {
-                    videoTexture.video.play();
-
-                }
-                play = !play
-               out = true;
-                firstTimeIn = true;
-                
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           playPause.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                if(play)
-                {
-                    videoTexture.video.pause();
-                   
-                }
-                else
-                {
-                    videoTexture.video.play();
-                }
-               play = !play;
-                out = true;
-                firstTimeIn = true;
-        
-            }));
-            playPause.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                    TweenLite.to(playPause.scaling,0.5,{x: 0.40, y:0.40, z: 0.40});
-               
-                    },10)
-               
-            }));
-
-            reset.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-            
-            TweenLite.to(reset.scaling,0.5,{x: 0.8, y:0.8, z: 0.40})
-            timerin = setTimeout(()=> {
-                videoTexture.video.currentTime = 0;
-                videoTexture.video.play();
-                play = true;
-                out = true;
-                firstTimeIn = true;
-                
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           reset.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                videoTexture.video.currentTime = 0;
-                videoTexture.video.play();
-                play = true;
-                out = true;
-                firstTimeIn = true;
-        
-            }));
-            reset.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                    TweenLite.to(reset.scaling,0.5,{x: 0.40, y:0.40, z: 0.40});
-               
-                    },10)
-               
-            }));
-        
-      
     }
-        var createPhoto2 = function()
-        {
-            let dome = new BABYLON.PhotoDome(
-            "scene2",
-            "./img/image2.jpg",
-            {
-                resolution:32,
-                size: 1000,
-                faceForward: false
-            },
-            scene
-        )
-        
-        
-        var planGUILink = BABYLON.Mesh.CreatePlane("linkGui", 3);
-        var planLink = BABYLON.Mesh.CreateDisc("link", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        planLink.position = new BABYLON.Vector3(-1.6981479046085077,0,0)
-        
-        planLink.material = matLink;
-        planGUILink.position = planLink.position.add(planLink.position.subtract(camera.position).normalize().scale(0.5));
-
-        
-        let observer=scene.onBeforeRenderObservable.add(()=>
-            {
-                var camPos = scene.activeCamera == vrHelper.webVRCamera ? vrHelper.webVRCamera.devicePosition : scene.activeCamera.position
-                var dir1 = planLink.position.subtract(scene.activeCamera.position)
-                var dir1_1 = planGUILink.position.subtract(scene.activeCamera.position)
-                planLink.lookAt(planLink.position.add(dir1))
-                planGUILink.lookAt(planGUILink.position.add(dir1_1))
-                
-            });
-        
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUILink);
-        var rect1 = new BABYLON.GUI.Rectangle();
-        rect1.width = 0.8;
-        rect1.height = "200px";
-        rect1.cornerRadius = 90;
-        //rect1.color = "white";  //couleur des bordures du rectangle
-        rect1.thickness = 2; 
-        rect1.background = "purple";
-        advancedTexture.addControl(rect1);
-        var label = new BABYLON.GUI.TextBlock();
-        label.text = "Vers sc3";
-        label.fontSize = "150";
-        label.color = "white";
-        rect1.addControl(label);
-        rect1.top = "-350px";
-        rect1.isVisible = false;
-
-        //--------Action Managers------------------------------
-        
-        planLink.actionManager = new BABYLON.ActionManager(scene);
-        
-
-     // ------------------TRIGGERS------------------------------------------------
-
-        let out = true;
-        var timerin;
-        var timerout;
-        var firstTimeIn = true;
-           //-------------Link------------------------------------------   
-        planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-                rect1.isVisible = true;
-                TweenLite.to(planLink.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-                
-            timerin = setTimeout(()=> {
-               
-                scene.onBeforeRenderObservable.remove(observer);
-                
-                 out = null;
-                 timerin = null;
-                 timerout = null;
-                 firstTimeIn = null;
-                
-
-
-                label.dispose();
-                label = null;
-                rect1.dispose();
-                rect1 = null;
-                advancedTexture.dispose();
-                advancedTexture = null;
-                planGUILink.dispose();
-                planGUILink = null;
-                planLink.actionManager.dispose();
-                planLink.actionManager = null;
-                planLink.dispose();
-                planLink = null;
-                
-                
-               dome.dispose();
-               dome = null;
-
-               createPhoto3()
-            }, 3000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                setTimeout(()=>
-                {
-                
-                scene.onBeforeRenderObservable.remove(observer);
-                
-                 out = null;
-                 timerin = null;
-                 timerout = null;
-                 firstTimeIn = null;
-                 
-
-
-                label.dispose();
-                label = null;
-                rect1.dispose();
-                rect1 = null;
-                advancedTexture.dispose();
-                advancedTexture = null;
-                planGUILink.dispose();
-                planGUILink = null;
-                planLink.actionManager.dispose();
-                planLink.actionManager = null;
-                planLink.dispose();
-                planLink = null;
-                
-                
-                
-               dome.dispose();
-               dome = null;
-
-                createPhoto3();
-
-                },500)
-                
-        
-            }));
-            planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                firstTimeIn = true;
-                
-                TweenLite.to(planLink.scaling,0.5,{x: 1, y:1, z: 1})
-                setTimeout(()=>{rect1.isVisible = false},200);
-                
-               
-                    },10)
-               
-        
-            }));
-        }
-
-        var createPhoto3 = function()
-        {
-            let dome = new BABYLON.PhotoDome(
-            "scene2",
-            "./img/image3.jpg",
-            {
-                resolution:32,
-                size: 1000,
-                faceForward: false
-            },
-            scene
-        )
-        
-        
-        var planGUILink = BABYLON.Mesh.CreatePlane("linkGui", 3);
-        var planLink = BABYLON.Mesh.CreateDisc("link", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        planLink.position = new BABYLON.Vector3(7.892592315735419,0,-5.816237354590933)
-        planLink.material = matLink;
-        planGUILink.position = planLink.position.add(planLink.position.subtract(camera.position).normalize().scale(0.5));
-        
-        var planInfo = BABYLON.Mesh.CreateDisc("link", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-        var planGUIInfo = BABYLON.Mesh.CreatePlane("linkGui", 3);
-        planInfo.position = new BABYLON.Vector3(1.9047572433093785,0,2.995645484969945)
-        planInfo.material = matInfo;
-        planGUIInfo.position = planInfo.position.add(planInfo.position.subtract(camera.position).normalize().scale(0.5));
-        var closeInfo = new BABYLON.Mesh.CreatePlane("closeInfo",2,scene);
-        closeInfo.position = planGUIInfo.position.add(planGUIInfo.position.subtract(camera.position).normalize().scale(-0.5));
-        closeInfo.position = closeInfo.position.add(new BABYLON.Vector3(1.5,2.8,0))
-        closeInfo.isVisible = false;
-        closeInfo.scaling.x = 0.25;
-        closeInfo.scaling.y = 0.25;
-        
-        closeInfo.material = matClose;
-        
-        let observer=scene.onBeforeRenderObservable.add(()=>
-            {
-                var camPos = scene.activeCamera == vrHelper.webVRCamera ? vrHelper.webVRCamera.devicePosition : scene.activeCamera.position
-                var dir1 = planLink.position.subtract(scene.activeCamera.position)
-                var dir1_1 = planGUILink.position.subtract(scene.activeCamera.position)
-                var dir2 = planGUIInfo.position.subtract(scene.activeCamera.position)
-                var dir2_1 = planInfo.position.subtract(scene.activeCamera.position)
-                var dir2_2 = closeInfo.position.subtract(scene.activeCamera.position)
-                planLink.lookAt(planLink.position.add(dir1))
-                planGUILink.lookAt(planGUILink.position.add(dir1_1))
-                planGUIInfo.lookAt(planGUIInfo.position.add(dir2))
-                planInfo.lookAt(planInfo.position.add(dir2_1));
-                closeInfo.lookAt(closeInfo.position.add(dir2_2));
-                
-            });
-        
-        var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUILink);
-        var rect1 = new BABYLON.GUI.Rectangle();
-        rect1.width = 0.8;
-        rect1.height = "200px";
-        rect1.cornerRadius = 90;
-        //rect1.color = "white";  //couleur des bordures du rectangle
-        rect1.thickness = 2; 
-        rect1.background = "purple";
-        advancedTexture.addControl(rect1);
-        var label = new BABYLON.GUI.TextBlock();
-        label.text = "Vers sc4";
-        label.fontSize = "150";
-        label.color = "white";
-        rect1.addControl(label);
-        rect1.top = "-350px";
-        rect1.isVisible = false;
-
-        var advancedTextureInfo = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUIInfo);
-            var rectInfo = new BABYLON.GUI.Rectangle();
-            rectInfo.width = 0.8;
-            rectInfo.height = "200px";
-            rectInfo.cornerRadius = 90;
-            //rectInfo.color = "white";
-            rectInfo.thickness = 2;
-            rectInfo.background = "purple";
-            advancedTextureInfo.addControl(rectInfo);
-            var labelInfo = new BABYLON.GUI.TextBlock();
-            labelInfo.text = "Info";
-            labelInfo.fontSize = "150"
-            labelInfo.color ="white"
-            rectInfo.addControl(labelInfo);
-            rectInfo.top = "-350px";
-            labelInfo.fontFamily = "Arial"
-            rectInfo.isVisible = false;
-
-            var sv = new BABYLON.GUI.ScrollViewer();
-                sv.thickness = 7;
-                sv.color = "#3A4454";
-                sv.width = 0.6;
-                sv.height = 0.6;
-                sv.background = "#3A4454";
-                sv.verticalBar.color = "black"
-                
-                
-
-                advancedTextureInfo.addControl(sv);
-
-                var tb = new BABYLON.GUI.TextBlock();
-                tb.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
-                tb.resizeToFit = true;
-                tb.paddingTop = "5%";
-                tb.paddingLeft = "30px";
-                tb.paddingRight = "20px"
-                tb.paddingBottom = "5%";
-                tb.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                tb.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                tb.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
-                tb.textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                tb.color = "white";
-                tb.fontFamily = "Arial";
-                
-                tb.text = "The Oriente Station is one of the most important bus and train stations in the city. Designed by the Spanish architect and engineer Santiago Calatrava, it has an enormous metal skeleton that covers the eight train lines and its platforms. Finished in 1998 to serve the Expo’98 and, later, the Parque das Nações area, in its surroundings are companies, services, hotels, bars, animation, as well as the well known Vasco da Gama shopping centre.";
-
-                tb.fontSize = "40";
-                
-                sv.addControl(tb);
-
     
-                var header = new BABYLON.GUI.TextBlock();
-                header.textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
-                header.text = "Information sur la gare";
-                header.height = "100px";
-                header.color = "white"
-                header.textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
-                header.fontSize = "40px"
-                header.fontFamily = "Arial"
+    addHyperlink(i)
+    {
+            this.hotspotGUI[i] = new BABYLON.Mesh.CreatePlane("hyperlinkGui", data.Story.scenes[this.p].hotspot[i].geometry.options.size, scene);
+            this.hotspot[i] = new BABYLON.Mesh.CreateDisc("Hyperlink", data.Story.scenes[this.p].hotspot[i].geometry.options.radius, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+            this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
+            
+            this.hotspot[i].material = matHyperLink;
+            this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
+
+
+            //Création du bouton close
+            this.close[i] = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
+            this.close[i].parent = this.hotspotGUI[i];
+            this.close[i].position = new BABYLON.Vector3(1.1,1.6,0)
+            
+            this.close[i].isVisible = false;
+            this.close[i].scaling.x = 0.25;
+            this.close[i].scaling.y = 0.25;
+            this.close[i].material = matClose;
+
+            // Création de la texture dynamique
+            this.advancedTexture[i] = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(this.hotspotGUI[i]);
+            
+            // Création de l'étiquette
+            this.rect[i] = new BABYLON.GUI.Rectangle();
+            this.rect[i].width = 0.8;
+            this.rect[i].height = "200px";
+            this.rect[i].cornerRadius = 90;
+            this.rect[i].thickness = 2; 
+            this.rect[i].background = "purple";
+            this.advancedTexture[i].addControl(this.rect[i]);
+            
+            // Création du texte de l'étiquette
+            this.label[i] = new BABYLON.GUI.TextBlock();
+            this.label[i].text = data.Story.scenes[this.p].hotspot[i].name;
+            this.label[i].fontSize = "150";
+            this.label[i].color = "white";
+            this.rect[i].addControl(this.label[i]);
+            this.rect[i].top = "-350px";
+            this.rect[i].isVisible = false;
+
+            // Création de l'étiquette + texte de l'hyperlink (adresse html)
+            this.rect2[i] = new BABYLON.GUI.Rectangle();
+            this.label2[i] = new BABYLON.GUI.TextBlock();
+            this.rect2[i].isVisible = false;
+            this.rect2[i].width = 1;
+            this.rect2[i].height = "150px";
+            this.rect2[i].cornerRadius = 90;
+            this.rect2[i].thickness = 2;
+            this.rect2[i].background = "purple";
+            this.advancedTexture[i].addControl(this.rect2[i]);
+            this.label2[i].text = data.Story.scenes[this.p].hotspot[i].event.name ;
+            this.label2[i].fontSize = "100"
+            this.label2[i].color = "white"
+            this.rect2[i].top = "-350px"
+            this.label2[i].hoverCursor = "pointer"
+            this.rect2[i].addControl(this.label2[i]);
+    }
+
+    addImage(i)
+    {
+         this.hotspotGUI[i] = new BABYLON.Mesh.CreatePlane("hyperlinkGui", data.Story.scenes[this.p].hotspot[i].geometry.options.size, scene);
+        this.hotspot[i] = new BABYLON.Mesh.CreateDisc("Hyperlink", data.Story.scenes[this.p].hotspot[i].geometry.options.radius, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+        this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
+        
+        this.hotspot[i].material = matImage;
+        this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
+        
+        // Création du plan où l'image va être projeté
+        this.plan[i] = BABYLON.Mesh.CreatePlane("Image", 4);
+        this.plan[i].parent = this.hotspot[i];
+        this.plan[i].scaling.x = 1920/1080;
+        this.plan[i].material = matImageDisplay;
+        this.plan[i].isVisible = false;
+        
+        // Création du bouton close
+        this.close[i] = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
+        this.close[i].parent = this.plan[i];
+        this.close[i].position = new BABYLON.Vector3(1.8,2.3,-0.5);
+        this.close[i].isVisible = false;
+        this.close[i].scaling.x = 0.15;
+        this.close[i].scaling.y = 0.25;
+        this.close[i].material = matClose;
+
+         this.advancedTexture[i] = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(this.hotspotGUI[i]);
+        
+        // Etiquette
+        this.rect[i] = new BABYLON.GUI.Rectangle();
+        this.rect[i].width = 0.8;
+        this.rect[i].height = "200px";
+        this.rect[i].cornerRadius = 90;
+        this.rect[i].thickness = 2; 
+        this.rect[i].background = "purple";
+        this.rect[i].top = "-350px";
+        this.rect[i].isVisible = false;
+        this.advancedTexture[i].addControl(this.rect[i]);
+        
+        // Texte de l'étiquette
+        this.label[i] = new BABYLON.GUI.TextBlock();
+        this.label[i].text = "Image";
+        this.label[i].fontSize = "150";
+        this.label[i].color = "white";
+        this.rect[i].addControl(this.label[i]);
+        
+
+    }
+
+    addInfo(i)
+    {
+        
+        this.hotspot[i] = new BABYLON.Mesh.CreateDisc("link", data.Story.scenes[this.p].hotspot[i].geometry.options.radius, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+        this.hotspotGUI[i] = new BABYLON.Mesh.CreatePlane("linkGui",data.Story.scenes[this.p].hotspot[i].geometry.options.size, scene);
+        this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
+        this.hotspot[i].material = matInfo;
+        this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
+        
+        // Création du bouton play
+        this.play[i] = new BABYLON.Mesh.CreatePlane("playPause",2,scene);
+       
+        this.play[i].parent = this.hotspotGUI[i];
+        this.play[i].position = new BABYLON.Vector3(0,-1.2,-0.5);
+        this.play[i].isVisible = false;
+        this.play[i].scaling.x = 0.20;
+        this.play[i].scaling.y = 0.20;
+        this.play[i].hoverCursor = "pointer"
+        
+        this.play[i].material = matplayPause;
+
+
+        // Création du bouton play
+        this.accel[i] = BABYLON.Mesh.CreateDisc("Hyperlink", 1, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+       
+        this.accel[i].parent = this.hotspotGUI[i];
+        this.accel[i].position = new BABYLON.Vector3(-0.7,-1.2,-0.5);
+        this.accel[i].isVisible = false;
+        this.accel[i].scaling.x = 0.20;
+        this.accel[i].scaling.y = 0.20;
+        this.accel[i].hoverCursor = "pointer"
+        
+        this.accel[i].material = matAccel;
+
+        // Création du bouton reset
+        this.reset[i] = BABYLON.Mesh.CreateDisc("Hyperlink", 1, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+       
+        this.reset[i].parent = this.hotspotGUI[i];
+        this.reset[i].position = new BABYLON.Vector3(0.7,-1.2,-0.5);
+        this.reset[i].isVisible = false;
+        this.reset[i].scaling.x = 0.20;
+        this.reset[i].scaling.y = 0.20;
+        this.reset[i].hoverCursor = "pointer"
+        
+        this.reset[i].material = matreset;
+
+
+        // Création du bouton close
+        this.close[i] = new BABYLON.Mesh.CreatePlane("closeInfo",2,scene);
+        this.close[i].parent = this.hotspotGUI[i];
+        this.close[i].position = new BABYLON.Vector3(0.7,1.3,-0.5)
+        this.close[i].isVisible = false;
+        this.close[i].scaling.x = 0.15;
+        this.close[i].scaling.y = 0.15;
+        this.close[i].material = matClose;
+       
+        this.advancedTexture[i] = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(this.hotspotGUI[i]);
+       
+        //Etiquette
+        this.rect[i] = new BABYLON.GUI.Rectangle();
+        this.rect[i].width = 0.8;
+        this.rect[i].height = "200px";
+        this.rect[i].cornerRadius = 90;
+        this.rect[i].thickness = 2;
+        this.rect[i].background = "purple";
+        this.advancedTexture[i].addControl(this.rect[i]);
+        
+        // Texte étiquette
+        this.label[i] = new BABYLON.GUI.TextBlock();
+        this.label[i].text = "Info";
+        this.label[i].fontSize = "150"
+        this.label[i].color ="white"
+        this.rect[i].addControl(this.label[i]);
+        this.rect[i].top = "-350px";
+        this.label[i].fontFamily = "Arial"
+        this.rect[i].isVisible = false;
+
+
+        // Scroll Viewer : objet où le texte va être affiché
+        this.sv[i] = new BABYLON.GUI.ScrollViewer();
+        this.sv[i].thickness = 7;
+        this.sv[i].color = "#3A4454";
+        this.sv[i].width = 0.6;
+        this.sv[i].height = 0.6;
+        this.sv[i].background = "#3A4454";
+        this.sv[i].verticalBar.color = "black"
+      
+        this.advancedTexture[i].addControl(this.sv[i]);
+        
+        // Création du texte affiché dans le Scroll Viewer
+        this.text[i] = new BABYLON.GUI.TextBlock();
+        this.text[i].textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
+        this.text[i].resizeToFit = true;
+        this.text[i].paddingTop = "5%";
+        this.text[i].paddingLeft = "30px";
+        this.text[i].paddingRight = "20px"
+        this.text[i].paddingBottom = "5%";
+        this.text[i].horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this.text[i].verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.text[i].textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+        this.text[i].textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+        this.text[i].color = "white";
+        this.text[i].fontFamily = "Arial";
+        this.text[i].text = "The Oriente Station is one of the most important bus and train stations in the city. Designed by the Spanish architect and engineer Santiago Calatrava, it has an enormous metal skeleton that covers the eight train lines and its platforms. Finished in 1998 to serve the Expo’98 and, later, the Parque das Nações area, in its surroundings are companies, services, hotels, bars, animation, as well as the well known Vasco da Gama shopping centre.";
+
+        this.text[i].fontSize = "40";
+                
+        this.sv[i].addControl(this.text[i]);
+
+                // Création du texte du titre du texte défilant
+                this.label2[i] = new BABYLON.GUI.TextBlock();
+                this.label2[i].textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
+                this.label2[i].text = "Information sur la gare";
+                this.label2[i].height = "100px";
+                this.label2[i].color = "white"
+                this.label2[i].textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
+                this.label2[i].fontSize = "40px"
+                this.label2[i].fontFamily = "Arial"
                 
                
                 
-
-                var headerContainer = new BABYLON.GUI.Rectangle()
+                // Création de l'étiquette du titre du texte défilant
+                this.rect2[i] = new BABYLON.GUI.Rectangle()
 
             
-                headerContainer.width = 0.6;
-                headerContainer.height = "100px";
-                headerContainer.cornerRadius = 20;
-               // headerContainer.color = "#677383";
-                headerContainer.thickness = 2;
-                headerContainer.background = "#677383";
-                headerContainer.top = "-360px";
+                this.rect2[i].width = 0.6;
+                this.rect2[i].height = "100px";
+                this.rect2[i].cornerRadius = 20;
+                this.rect2[i].thickness = 2;
+                this.rect2[i].background = "#677383";
+                this.rect2[i].top = "-360px";
 
-                advancedTextureInfo.addControl(headerContainer);
-                headerContainer.addControl(header);
-                sv.isVisible = false;
-                headerContainer.isVisible = false;
-
-        //--------Action Managers------------------------------
-        
-        planLink.actionManager = new BABYLON.ActionManager(scene);
-        planInfo.actionManager = new BABYLON.ActionManager(scene);
-        closeInfo.actionManager = new BABYLON.ActionManager(scene);
-
-     // ------------------TRIGGERS------------------------------------------------
-
-        let out = true;
-        var timerin;
-        var timerout;
-        var firstTimeIn = true;
-        var timerinterval;
-        var speed = 0.01;
-           //-------------Link------------------------------------------   
-        planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
+                this.advancedTexture[i].addControl(this.rect2[i]);
+                this.rect2[i].addControl(this.label2[i]);
+                this.sv[i].isVisible = false;
+                this.rect2[i].isVisible = false;
             
+    }
+
+    addMusic(i)
+    {
+         this.hotspotGUI[i] = new BABYLON.Mesh.CreatePlane("MusicGui", data.Story.scenes[this.p].hotspot[i].geometry.options.size, scene);
+             this.hotspot[i] = new BABYLON.Mesh.CreateDisc("Music", data.Story.scenes[this.p].hotspot[i].geometry.options.radius, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+            this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
+            this.hotspot[i].material = matMusic;
+            this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
+
+
+             this.advancedTexture[i] = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(this.hotspotGUI[i]);
+
+            // Création étiquette
+            this.rect[i] = new BABYLON.GUI.Rectangle();
+            this.rect[i].width = 0.8;
+            this.rect[i].height = "200px";
+            this.rect[i].cornerRadius = 90;
+            this.rect[i].thickness = 2; 
+            this.rect[i].background = "purple";
             
-            if(firstTimeIn)
-            {
-                rect1.isVisible = true;
-                TweenLite.to(planLink.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-                
-            timerin = setTimeout(()=> {
-               
-                scene.onBeforeRenderObservable.remove(observer);
-                
-                 out = null;
-                 timerin = null;
-                 timerout = null;
-                 timerinterval = null;
-                 firstTimeIn = null;
-                 speed = null;
-
-                
-                label.dispose();
-                label = null;
-                rect1.dispose();
-                rect1 = null;
-                advancedTexture.dispose();
-                advancedTexture = null;
-                planGUILink.dispose();
-                planGUILink = null;
-                planLink.actionManager.dispose();
-                planLink.actionManager = null;
-                planLink.dispose();
-                planLink = null;
-                
-
-                closeInfo.actionManager.dispose();
-                closeInfo.actionManager = null;
-                closeInfo.dispose();
-                closeInfo = null;
-                headerContainer.dispose();
-                headerContainer = null;
-                header.dispose();
-                header = null;
-                tb.dispose();
-                tb= null;
-                sv.dispose();
-                sv = null;
-                labelInfo.dispose();
-                labelInfo = null;
-                rectInfo.dispose();
-                rectInfo = null;
-                planGUIInfo.dispose();
-                planGUIInfo = null;
-                planInfo.actionManager.dispose();
-                planInfo.actionManager = null;
-                planInfo.dispose();
-                planInfo = null;
-                
-               dome.dispose();
-               dome = null;
-
-               createPhoto4()
-            }, 3000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                setTimeout(()=>
-                {
-                    scene.onBeforeRenderObservable.remove(observer);
-                    out = null;
-                 timerin = null;
-                 timerout = null;
-                 timerinterval = null;
-                 firstTimeIn = null;
-                 speed = null;
-
-                
-                label.dispose();
-                label = null;
-                rect1.dispose();
-                rect1 = null;
-                advancedTexture.dispose();
-                advancedTexture = null;
-                planGUILink.dispose();
-                planGUILink = null;
-                planLink.actionManager.dispose();
-                planLink.actionManager = null;
-                planLink.dispose();
-                planLink = null;
-                
-
-                closeInfo.actionManager.dispose();
-                closeInfo.actionManager = null;
-                closeInfo.dispose();
-                closeInfo = null;
-                headerContainer.dispose();
-                headerContainer = null;
-                header.dispose();
-                header = null;
-                tb.dispose();
-                tb= null;
-                sv.dispose();
-                sv = null;
-                labelInfo.dispose();
-                labelInfo = null;
-                rectInfo.dispose();
-                rectInfo = null;
-                planGUIInfo.dispose();
-                planGUIInfo = null;
-                planInfo.actionManager.dispose();
-                planInfo.actionManager = null;
-                planInfo.dispose();
-                planInfo = null;
-                
-               dome.dispose();
-               dome = null;
-
-               createPhoto4();
-
-                },500)
-                
-        
-            }));
-            planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                firstTimeIn = true;
-                
-                TweenLite.to(planLink.scaling,0.5,{x: 1, y:1, z: 1})
-                setTimeout(()=>{rect1.isVisible = false},200);
-                
-               
-                    },10)
-               
-        
-            }));
-
-
-            planInfo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
+            this.advancedTexture[i].addControl(this.rect[i]);
             
-            
-            if(firstTimeIn)
-            {
-                rectInfo.isVisible = true;
-                TweenLite.to(planInfo.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-                
-            timerin = setTimeout(()=> {
-                out = true;
-                firstTimeIn = true;
-                rectInfo.isVisible = false;
-                planGUIInfo.scaling = new BABYLON.Vector3(2,2,1);
-                planInfo.isVisible = false;
-                sv.isVisible = true;
-                headerContainer.isVisible = true;
-                closeInfo.isVisible = true;
-                timerinterval = setInterval(function(){
-                    if(sv.verticalBar.value < 1  )
-                    {
-                    sv.verticalBar.value +=0.01;
-                    }
-                   
-                },100)
-                
-            }, 2000)
-        }
-            firstTimeIn = false;
-                
-        
-            }));
-           planInfo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                out = true;
-                firstTimeIn = true;
-                rectInfo.isVisible = false;
-                planGUIInfo.scaling = new BABYLON.Vector3(2,2,1);
-                planInfo.isVisible = false;
-                sv.isVisible = true;
-                headerContainer.isVisible = true;
-                closeInfo.isVisible = true;
-                timerinterval = setInterval(function(){
-                    if(sv.verticalBar.value < 1  )
-                    {
-                    sv.verticalBar.value +=speed;
-                    }
-                    
-                },100)
-                
-        
-            }));
-            planInfo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                
-                    TweenLite.to(planInfo.scaling,0.5,{x: 1, y:1, z: 1})
-                    setTimeout(()=>{rectInfo.isVisible = false},200);
-                
-               
-                    },10)
-               
-        
-            }));
+            // Création du texte de l'étiquette
+            this.label[i] = new BABYLON.GUI.TextBlock();
+            this.label[i].text = "Music";
+            this.label[i].fontSize = "150";
+            this.label[i].color = "white";
+            this.rect[i].addControl(this.label[i]);
+            this.rect[i].top = "-350px";
+            this.rect[i].isVisible = false;
 
-            closeInfo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-            
-            TweenLite.to(closeInfo.scaling,0.5,{x: 0.5, y:0.5, z: 0.25})
-            timerin = setTimeout(()=> {
-                
-               out = true;
-               firstTimeIn = true;
-               clearInterval(timerinterval)
-               closeInfo.isVisible = false;
-                sv.isVisible = false;
-                headerContainer.isVisible = false;
-                planInfo.isVisible = true;
-                planGUIInfo.scaling = new BABYLON.Vector3(1,1,1);
-                sv.verticalBar.value = 0;
-                
-                
-            }, 1000)
-        }
-            firstTimeIn = false;
-                
+            // Création du bouton close
+            this.close[i] = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
         
-            }));
-           closeInfo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
-            {
-                clearTimeout(timerin);
-                out = true;
-                firstTimeIn = true;
-                clearInterval(timerinterval)
-                closeInfo.isVisible = false;
-                sv.isVisible = false;
-                headerContainer.isVisible = false;
-                planInfo.isVisible = true;
-                planGUIInfo.scaling = new BABYLON.Vector3(1,1,1);
-                sv.verticalBar.value = 0;
-                
-        
-            }));
-            closeInfo.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                    firstTimeIn = true;
-                    TweenLite.to(closeInfo.scaling,0.5,{x: 0.25, y:0.25, z: 0.25});
-               
-                    },10)
-               
-            }));
-        }
+            this.close[i].parent = this.hotspotGUI[i];
+            this.close[i].position = new BABYLON.Vector3(1.4,1,-0.5)
+            this.close[i].isVisible = false;
+            this.close[i].scaling.x = 0.25;
+            this.close[i].scaling.y = 0.25;
+            this.close[i].material = matClose;
 
-        var createPhoto4 = function()
+            //Création du bouton reset
+            this.reset[i] = new BABYLON.Mesh.CreateDisc("Hyperlink", 1, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
+        
+            this.reset[i].parent = this.hotspotGUI[i];
+            this.reset[i].position = new BABYLON.Vector3(1.4,0,-0.5);
+            this.reset[i].isVisible = false;
+            this.reset[i].scaling.x = 0.40;
+            this.reset[i].scaling.y = 0.40;
+            
+            this.reset[i].material = matreset;
+
+      
+            // Création de la musique
+         this.music[i] = new BABYLON.Sound("music", data.Story.scenes[this.p].hotspot[i].event.url ,
+    scene, null, { loop: data.Story.scenes[this.p].hotspot[i].event.loop , autoplay: false, volume: data.Story.scenes[this.p].hotspot[i].event.volume   });
+}
+    Observer()
+    {
+        
+        var camPos = scene.activeCamera == vrHelper.webVRCamera ? vrHelper.webVRCamera.devicePosition : scene.activeCamera.position;
+        for(var i=0;i<this.n;i++)
         {
-            let dome = new BABYLON.PhotoDome(
-                "scene4",
-                "./img/image4.jpg",
-                {
-                    resolution:32,
-                    size: 1000,
-                    faceForward: false
-                },
-                scene
-            )
+            // On oriente tous les plans des étiquettes (mesh de derrière) et hotspots (ellipse de devant) vers la caméra
             
-            var planGUILink = BABYLON.Mesh.CreatePlane("linkGui", 3);
-            var planLink = BABYLON.Mesh.CreateDisc("link", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-            planLink.position = new BABYLON.Vector3(9.892592315735419,0,-4.816237354590933)
-            planLink.material = matLink;
-            planGUILink.position = planLink.position.add(planLink.position.subtract(camera.position).normalize().scale(0.5));
+            this.dir[i] = this.hotspot[i].position.subtract(scene.activeCamera.position);
+            this.dirGUI[i] = this.hotspotGUI[i].position.subtract(scene.activeCamera.position);
+            this.hotspot[i].lookAt(this.hotspot[i].position.add(this.dir[i]));
+            this.hotspotGUI[i].lookAt(this.hotspotGUI[i].position.add(this.dirGUI[i]));
+            
+        }
+        
+        
+    }
+
+   
+
+    destructionHotspots()
+    {
+        // On détruit l'observer => on détruit l'orientation
+        scene.onBeforeRenderObservable.remove(this.observer);
+        this.observer = null;
+        delete this.observer;
+
+       
+        for(var i=0;i<this.n;i++)
+        {   
+            // On détruit tout les hotspots, selon le type. 
+            // Mais il ne faut pas oublié de détruire tous les tableaux
+            // On dispose les éléments spécifiques à un type d'hotspot mais on met à null + delete les tableaux 
+            if(data.Story.scenes[this.p].hotspot[i].geometry.type == "hyperlink" || data.Story.scenes[this.p].hotspot[i].geometry.type == "info" )
+            {
+               
+                this.label2[i].dispose();
+               
+                this.rect2[i].dispose();
+
+                if(data.Story.scenes[this.p].hotspot[i].geometry.type == "info")
+                {
+                    this.text[i].dispose();
+                    this.sv[i].dispose();
+                    this.accel[i].dispose()
+                    this.play[i].dispose();
+                    this.reset[i].dispose()
+                }
+                
+
+                this.close[i].dispose();
+                
+            }
+
+            else if(data.Story.scenes[this.p].hotspot[i].geometry.type == "video" || data.Story.scenes[this.p].hotspot[i].geometry.type == "image" )
+            {                
+                if(data.Story.scenes[this.p].hotspot[i].geometry.type == "video")
+                {
+                    this.reset[i].dispose();
+                    
+
+                    this.play[i].dispose();
+                    
+                    videoTexture.video.pause();
+                    videoTexture.video.currentTime = 0;
+
+                }
+                this.close[i].dispose();
+                
+
+                this.plan[i].dispose();
+                
+            }
+
+            else if(data.Story.scenes[this.p].hotspot[i].geometry.type == "music")
+            {
+                this.reset[i].dispose();
+                this.close[i].dispose();
+                this.music[i].dispose();
+            }
+
+            this.dir[i] = null,
+            delete this.dir[i];
+
+            this.dirGUI[i] = null;
+            delete this.dirGUI[i];
+
+            this.text[i] = null;
+            delete this.text[i];
+
+            this.label2[i] = null;
+            delete this.label2[i];
+
+            this.rect2[i] = null;
+            delete this.rect2[i];
+
+            this.sv[i] = null;
+            delete this.sv[i];
+
+            this.accel[i] = null;
+            delete this.accel[i];
+
+            this.play[i] = null;
+            delete this.play[i];
+
+            this.plan[i] = null;
+            delete this.plan[i];
+
+            this.reset[i] = null;
+            delete this.reset[i];
+
+            this.close[i] = null;
+            delete this.close[i];
+
+            this.music[i] = null;
+            delete this.music[i];
+
+            this.label[i].dispose();
+            this.label[i] =  null;
+            delete this.label[i];
+
+            this.rect[i].dispose();
+            this.rect[i] = null;
+            delete this.rect[i];
+
+            this.advancedTexture[i].dispose();
+            this.advancedTexture[i] = null;
+            delete this.advancedTexture[i]
+
+            this.hotspotGUI[i].dispose();
+            this.hotspotGUI[i] = null;
+            delete this.hotspotGUI[i];
+
+            this.hotspot[i].dispose();
+            this.hotspot[i] = null;
+            delete this.hotspot[i]
+
+            
+            
+        }
+        this.p = null;
+        delete this.p;
+
+        this.n = null;
+        delete this.n;
+
+        this.Photo.destructionPhoto();
+        this.Photo = null;
+        delete this.Photo;
+    
+    }
+    
+    
+}
+
+class Trigger 
+{
+    constructor(Hotspot)
+    {
+        this.out = true;
+        this.firsTimeIn = true;
+        this.display = false;
+        this.play = false;
+        this.defile = false;
+        this.speed = 0.01;
+        this.timerin;
+        this.timerout;
+        this.timerinterval;
+        this.p = Hotspot.p;
+        this.CreateActionManager(Hotspot);
+        this.CreateTriggerOver(Hotspot);
+        this.CreateTriggerOut(Hotspot);
+        this.CreateTriggerPickUp(Hotspot);
+     
+        
+        return this;
+    }
+    CreateActionManager(Hotspot)
+        {
+            // On crée tous les ActionManagers nécessaires, en fonction du type d'hotspot, il peut y en avoir 1,2,3,4
+            for(var i=0; i<Hotspot.n;i++)
+            {
+                
+                Hotspot.hotspot[i].actionManager = new BABYLON.ActionManager(scene);
+                if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type != "link") 
+                {
+                    Hotspot.close[i].actionManager = new BABYLON.ActionManager(scene);
+
+                  
+
+                     if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "music" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info"  ) 
+                    {
+                        Hotspot.reset[i].actionManager = new BABYLON.ActionManager(scene);
+                        if (data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info" )
+                        {
+                            Hotspot.play[i].actionManager = new BABYLON.ActionManager(scene);
+                            if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info")
+                            {
+                                Hotspot.accel[i].actionManager = new BABYLON.ActionManager(scene);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+      
+
+        CreateTriggerOver(Hotspot)
+        {
+            
+            Hotspot.hotspot.forEach((element,index) =>
+            {
+                // On regarde tous les hotspots de la scène.
+                // element : Hotspot.hotspot[index]
+                // index : indice de l'élément
+                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "music")
+                {
+                    //C'est un hotspot music
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        // Si on est plus dehors alors on détruit le timer du trigger détectant que l'on est à l'extérieur
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        // On est plus dehors
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                             // Affichage de l'étiquette
+                            Hotspot.rect[index].isVisible = true;
+                            // Effet lors de l'affichage
+                            TweenLite.to(element.scaling,0.5,{x:1.5,y:1.5});
+                           // Création du timer , actions décalées de deux secondes avec setTimeout(function, delay).
+                           // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {
+                                // Variables liées à l'intéraction
+                                this.out = true; // Le pointeur est-il dehors ?? 
+                                this.firsTimeIn = true; // Le pointeur rentre-t-il en contact pour la première fois avec l'objet?
+                                //Affichage des boutons reset + close
+                                Hotspot.close[index].isVisible = true;
+                                Hotspot.reset[index].isVisible = true;
+                                
+                                if(element.material != matplayPause)
+                                {
+                                    element.material = matplayPause; // On applique la texture du bouton Play au hotspot, ça évite de créer un bouton de plus
+                                }
+                                if(!Hotspot.music[index].isPlaying)
+                                {
+                                    Hotspot.music[index].play(); // la musique se lance
+               
+                                }
+                
+                                else{
+                                    Hotspot.music[index].pause(); // musique en pause
+                                }
+                            },2000)
+                        }
+                       
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+
+
+                    // Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                         // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.375,y:0.375});
+                            // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+
+                                // On ferme tout ce qui concerne le hotspot
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.reset[index].isVisible = false;
+                                Hotspot.music[index].stop(); // on remet la musique à zéro
+                                element.material = matMusic; // on remet la texture du hotspot musique
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+
+                    // Il y a un bouton reset, on crée son trigger
+
+
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.reset[index].scaling,0.5,{x:0.6,y:0.6});
+                            // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+
+                                // On remet la musique à 0.
+                                Hotspot.music[index].stop();
+                                Hotspot.music[index].play();
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+                    
+
+
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "link")
+                {
+                    // C'est un hotspot link
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        // Si on est plus dehors alors on détruit le timer du trigger détectant que l'on est à l'extérieur
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            // Affichage de l'étiquette
+                            Hotspot.rect[index].isVisible = true;
+                            TweenLite.to(element.scaling,0.5,{x:1.5,y:1.5});
+                            // Code qui va s'exécuter au bout de 3 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {   
+                                // destruction des triggers -> destruction des hotspots -> destruction de la photo 360°
+                                this.destruction(Hotspot);
+                                
+                                // On récupère l'indice de la prochaine scène
+                                let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
+                                
+                                // Création de la nouvelle photo -> création des nouveaux hotspots -> création des triggers
+                                new Photo(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
+
+                                // destruction de la variable id + élément p
+                                id = null;
+                                this.p = null;
+                                delete this.p;
+                                
+                            },3000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                    }));
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "image")
+                {
+                    //C'est un hotspot Image
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        // Si on est plus dehors alors on détruit le timer du trigger détectant que l'on est à l'extérieur
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet     
+                        if(this.firsTimeIn)
+                        {
+                            //Affichage de l'étiquette
+                            Hotspot.rect[index].isVisible = true;
+                            TweenLite.to(element.scaling,0.5,{x:1.5,y:1.5});
+                            // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+
+                                // l'image est-elle affichée?
+                                // cela évite d'afficher plusieurs fois le plan image
+                                if(!(this.display))
+                                {
+                                    // On remet le scaling du hotspot à la normal, car le plan image a pour parent le hotspot image
+                                    // donc l'enfant possède les mêmes propriétés que son parent (rotation, scaling)
+                                    element.scaling = new BABYLON.Vector3(1,1,1);
+                                    element.isVisible = false;
+                                    Hotspot.rect[index].isVisible = false;
+                                    Hotspot.plan[index].isVisible = true;
+                                    this.display = true;
+                                    Hotspot.close[index].isVisible = true;
+                                }
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                    }));
+
+                    // Il y un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.225,y:0.375});
+                            // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.display = false;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.plan[index].isVisible = false;
+                                element.isVisible = true;
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "hyperlink")
+                {
+                    //C'est un hotspot hyperlink
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            // On affiche l'étiquette
+                            // Si on a déjà sélectionné le hotspot, alors on n'affiche pas de nouveau l'étiquette
+                            if(Hotspot.rect2[index].isVisible != true)
+                            {
+                                Hotspot.rect[index].isVisible = true;
+                            }
+                            TweenLite.to(element.scaling,0.5,{x:1.5,y:1.5});
+                            // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.rect[index].isVisible = false;
+                                element.isVisible=false;
+                                Hotspot.rect2[index].isVisible = true;
+                                Hotspot.close[index].isVisible = true;
+
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                    }));
+
+                    // Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.375,y:0.375});
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.rect2[index].isVisible = false;
+                                
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+
+                    Hotspot.label2[index].onPointerEnterObservable.add(()=>
+                    {
+                        Hotspot.label2[index].color = "blue";
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+
+                        this.out = false;
+
+                        if(this.firsTimeIn)
+                        {
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.label2[index].color = "white";
+                                window.open(data.Story.scenes[this.p].hotspot[index].event.url);
+                            },2000)
+                        }
+                        this.firsTimeIn = false;
+                    })
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "video")
+                {
+                    // C'est un hotspot Video
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            Hotspot.rect[index].isVisible = true;
+                            TweenLite.to(element.scaling,0.5,{x:1.5,y:1.5});
+                            // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                
+                                element.scaling = new BABYLON.Vector3(1,1,1);
+                                element.isVisible = false;
+                                Hotspot.rect[index].isVisible = false;
+                                Hotspot.plan[index].isVisible = true;
+                                Hotspot.close[index].isVisible = true;
+                                Hotspot.play[index].isVisible = true;
+                                Hotspot.reset[index].isVisible = true;
+                                videoTexture.video.play();
+                                this.play = true;
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                    }));
+
+                    // Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.225,y:0.375});
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.play = false;
+                                Hotspot.plan[index].isVisible = false;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.play[index].isVisible = false;
+                                Hotspot.reset[index].isVisible = false;
+                                element.isVisible = true;
+                                videoTexture.video.pause();
+                                videoTexture.video.currentTime = 0;
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+
+                    // Il y a un bouton reset, on crée son trigger
+
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.reset[index].scaling,0.5,{x:0.375,y:0.6});
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.play = true;
+                                videoTexture.video.currentTime = 0;
+                                videoTexture.video.play();
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+
+                    // Il y a un bouton play, on crée son trigger
+
+                    Hotspot.play[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.play[index].scaling,0.5,{x:0.375,y:0.6});
+                            this.timerin = setTimeout(()=>
+                            {
+                                if(this.play)
+                                {
+                                    videoTexture.video.pause();
+                                }
+                                else
+                                {
+                                    videoTexture.video.play();
+                                }
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.play = !(this.play)
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+                }
+
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "info")
+                {
+                    //C'est un hotspot info
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            Hotspot.rect[index].isVisible = true;
+                            TweenLite.to(element.scaling,0.5,{x:1.5,y:1.5});
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                element.scaling = new BABYLON.Vector3(1,1,1);
+                                element.isVisible = false;
+                                Hotspot.hotspotGUI[index].scaling = new BABYLON.Vector3(2,2,1);
+                                Hotspot.rect[index].isVisible = false;
+                                Hotspot.sv[index].isVisible = true;
+                                Hotspot.rect2[index].isVisible = true;
+                                Hotspot.close[index].isVisible = true;
+                                Hotspot.play[index].isVisible = true;
+                                Hotspot.reset[index].isVisible = true;
+                                Hotspot.accel[index].isVisible = true;
+
+                                //Code qui va s'exécuter à interval de temps régulier => défilement du texte
+                                this.timerinterval = setInterval(()=>
+                                {
+                                    if(Hotspot.sv[index].verticalBar.value < 1)
+                                    {
+                                        Hotspot.sv[index].verticalBar.value += this.speed;
+                                    }
+                                    else if (Hotspot.sv[index].verticalBar.value == 1)
+                                    {
+                                        clearInterval(this.timerinterval);
+                                    }
+                                },100)
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                    }));
+
+                    // Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.225,y:0.225});
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.speed = 0.01;
+                                clearInterval(this.timerinterval)
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.play[index].isVisible = false;
+                                Hotspot.hotspotGUI[index].scaling = new BABYLON.Vector3(1,1,1);
+                                Hotspot.rect2[index].isVisible = false;
+                                Hotspot.sv[index].isVisible = false;
+                                Hotspot.play[index].isVisible = false;
+                                Hotspot.reset[index].isVisible = false;
+                                Hotspot.accel[index].isVisible = false;
+                                Hotspot.sv[index].verticalBar.value = 0;
+                                element.isVisible = true;
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+
+                    // Il y a un bouton play, on crée son trigger
+                    Hotspot.play[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.play[index].scaling,0.5,{x:0.3,y:0.3});
+                            this.timerin = setTimeout(()=>
+                            {
+                                if(this.defile)
+                                {
+                                    clearInterval(this.timerinterval)
+                                }
+                                else
+                                {
+                                    this.timerinterval = setInterval(()=>
+                                {
+                                    if(Hotspot.sv[index].verticalBar.value < 1)
+                                    {
+                                        Hotspot.sv[index].verticalBar.value += this.speed;
+                                    }
+                                    else if (Hotspot.sv[index].verticalBar.value == 1)
+                                    {
+                                        clearInterval(this.timerinterval)
+                                    }
+                                },100)
+                                }
+                                this.defile = !(this.defile)
+                               
+                                this.out = true;
+                                this.firsTimeIn = true;
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+                    // Il y a un hotspot reset 
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.reset[index].scaling,0.5,{x:0.3,y:0.3});
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.reset = 0.01;
+                                clearInterval(this.timerinterval);
+                                Hotspot.sv[index].verticalBar.value = 0;
+                                this.timerinterval = setInterval(()=>
+                                {
+                                    if(Hotspot.sv[index].verticalBar.value < 1)
+                                    {
+                                        Hotspot.sv[index].verticalBar.value += this.speed;
+                                    }
+                                    else if (Hotspot.sv[index].verticalBar.value == 1)
+                                    {
+                                        clearInterval(this.timerinterval)
+                                        }
+                                },100)
+                                
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+
+                     // Il y a un bouton accel, on crée son trigger
+                     Hotspot.accel[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
+                    {
+                        
+                        if(!(this.out))
+                        {
+                            clearTimeout(this.timerout);
+                        }
+                        this.out = false;
+                        // Est-ce la première fois qu'on rentre en contact avec l'objet
+                        if(this.firsTimeIn)
+                        {
+                            
+                            TweenLite.to(Hotspot.accel[index].scaling,0.5,{x:0.3,y:0.3});
+                            this.timerin = setTimeout(()=>
+                            {
+                                this.speed += 0.01;
+                               
+                                this.out = true;
+                                this.firsTimeIn = true;
+                            },2000)
+                        }
+                        
+                        // Ce n'est plus la première fois que l'on est en contact avec l'objet
+                        // Si timerin s'execute, alors firstTimeIn vaudra true, grâce au delais
+                        this.firsTimeIn = false;
+                        
+                    }));
+                
+                }
+                
+            })
+        }
+
+        CreateTriggerOut(Hotspot)
+        {
+            Hotspot.hotspot.forEach((element,index) =>
+            {
+                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "music")
+                {
+                    //C'est un hotspot music
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                            // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(element.scaling,0.5,{x:1,y:1});
+                            setTimeout(()=> {Hotspot.rect[index].isVisible = false},200)
+                        },10)
+                        
+                    }));
+
+                    //Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                            // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.25,y:0.25});
+                            
+                        },10)
+                        
+                    }));
+
+
+                    // Il y a un bouton reset, on crée son trigger
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                            // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.reset[index].scaling,0.5,{x:0.4,y:0.4});
+                            
+                        },10)
+                        
+                    }));
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "link")
+                {
+                    // C'est un hotspot Link
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(element.scaling,0.5,{x:1,y:1});
+                            setTimeout(()=> {Hotspot.rect[index].isVisible = false},200)
+                        },10)
+                    }));
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "image")
+                {
+                    //C'est un hotspot Image
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(element.scaling,0.5,{x:1,y:1});
+                            setTimeout(()=> {Hotspot.rect[index].isVisible = false},200)
+                        },10)
+                    }));
+
+
+                    //Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.15,y:0.25});
+                        },10)
+                    }));
+                }
+                
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "hyperlink")
+                {
+                    //C'est un hotspot HyperLink
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(element.scaling,0.5,{x:1,y:1});
+                            setTimeout(()=> {Hotspot.rect[index].isVisible = false},200)
+                        },10)
+                    }));
+
+                    //Il y a un bouton close, on crée son trigger 
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.25,y:0.25});
+                        },10)
+                    }));
+
+                    Hotspot.label2[index].onPointerOutObservable.add(()=>
+                    {
+                        Hotspot.label2[index].color = "white";
+                        
+                        this.timerout = setTimeout(()=>
+                        {
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            clearTimeout(this.timerin);
+                        },10);
+                    })
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "video")
+                {
+                    // C'est un hotspot video
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(element.scaling,0.5,{x:1,y:1});
+                            setTimeout(()=> {Hotspot.rect[index].isVisible = false},200)
+                        },10)
+                    }));
+
+
+                    // Il y a un close, on crée son trigger
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.15,y:0.25});
+                            
+                        },10)
+                    }));
+
+                    // Il y a un bouton play, on crée son trigger
+ 
+                    Hotspot.play[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.play[index].scaling,0.5,{x:0.25,y:0.40});
+                            
+                        },10)
+                    }));
+
+                    // Il y a un bouton reset, on crée son trigger
+
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.reset[index].scaling,0.5,{x:0.25,y:0.40});
+                            
+                        },10)
+                    }));
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "info")
+                {
+                    // C'est un hotspot Info
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(element.scaling,0.5,{x:1,y:1});
+                            setTimeout(()=> {Hotspot.rect[index].isVisible = false},200)
+                        },10)
+                    }));
+
+
+                    // Il y a un close, on crée son trigger
+                   Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.close[index].scaling,0.5,{x:0.15,y:0.15});
+                            
+                        },10)
+                    }));
+
+                    Hotspot.play[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.play[index].scaling,0.5,{x:0.2,y:0.2});
+                            
+                        },10)
+                    }));
+
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.reset[index].scaling,0.5,{x:0.2,y:0.2});
+                            
+                        },10)
+                    }));
+
+                    Hotspot.accel[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
+                    {
+                        // on diffère de 0.01sec l'exécution du code, car il y un problème avec la détection du gaze si on est dedans ou dehors lorssqu'on survol le hotspot
+                        // Cela alterne entre Out & Over lorsqu'on survole avec le gaze (VR) 
+                        this.timerout = setTimeout(()=>
+                        {
+                             // On ne doit plus exécuter le code du trigger Over
+                            clearTimeout(this.timerin);
+                            this.out = true;
+                            this.firsTimeIn = true;
+                            TweenLite.to(Hotspot.accel[index].scaling,0.5,{x:0.2,y:0.2});
+                            
+                        },10)
+                    }));
+                }
+                
+            })
+
+        }
+
+        // Le code dans Les triggers PickUp est le même que  dans la fonction de setTimeout dans le trigger OVER
+
+        CreateTriggerPickUp(Hotspot)
+        {
+            Hotspot.hotspot.forEach((element,index) =>
+            {
+                // On regarde tous les hotspots de la scène.
+                // element : Hotspot.hotspot[index]
+                // index : indice de l'élément
+                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "music")
+                {
+                    //C'est un hotspot music
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.close[index].isVisible = true;
+                                Hotspot.reset[index].isVisible = true;
+                                if(element.material != matplayPause)
+                                {
+                                    element.material = matplayPause;
+                                }
+                                if(!Hotspot.music[index].isPlaying)
+                                {
+                                    Hotspot.music[index].play();
+               
+                                }
+                
+                                else{
+                                    Hotspot.music[index].pause();
+                                }
+                        
+                    }));
+
+                    // Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.reset[index].isVisible = false;
+                                Hotspot.music[index].stop();
+                                element.material = matMusic;
+                                
+                    }));
+
+                    // Il y a un bouton reset, on crée son trigger
+
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.music[index].stop();
+                                Hotspot.music[index].play();
+            
+                                
+                    }));
+
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "link")
+                {
+                    // C'est un hotspot link
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                            clearTimeout(this.timerin);
+                            setTimeout(()=>
+                            {
+                                 this.destruction(Hotspot);
+                                let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
+                                
+                                new Photo(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
+                                id = null;
+                                this.p = null;
+                                delete this.p;
+                                
+                            },500)
+                        }
+                        
+                    ));
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "image")
+                {
+                    //C'est un hotspot Image
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                            clearTimeout(this.timerin);
+                           
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                if(!(this.display))
+                                {
+                                    element.scaling = new BABYLON.Vector3(1,1,1);
+                                    element.isVisible = false;
+                                    Hotspot.rect[index].isVisible = false;
+                                    Hotspot.plan[index].isVisible = true;
+                                    this.display = true;
+                                    Hotspot.close[index].isVisible = true;
+                                }
+                           
+                        
+                        
+                    }));
+                    
+                    // Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin);
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.display = false;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.plan[index].isVisible = false;
+                                element.isVisible = true;
+                                
+
+                    }));
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "hyperlink")
+                {
+                    //C'est un hotspot hyperlink
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.rect[index].isVisible = false;
+                                Hotspot.rect2[index].isVisible = true;
+                                Hotspot.close[index].isVisible = true;
+
+                           
+                    }));
+
+                    // Il y a un bouton close, on crée son trigger 
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.rect2[index].isVisible = false;
+                             
+                                
+                                
+                    }));
+
+                    // Trigger du label pour le hyperLink
+
+                    Hotspot.label2[index].onPointerClickObservable.add(()=>
+                    {
+                        Hotspot.label2[index].color = "white";
+                        window.open(data.Story.scenes[this.p].hotspot[index].event.url)
+                        clearTimeout(this.timerin);
+                        this.out = true;
+                        this.firsTimeIn = true;
+                    })
+
+
+                }
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "video")
+                {
+                    // C'est un hotspot Video
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                        
+                                clearTimeout(this.timerin);
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                element.scaling = new BABYLON.Vector3(1,1,1);
+                                element.isVisible = false;
+                                Hotspot.rect[index].isVisible = false;
+                                Hotspot.plan[index].isVisible = true;
+                                Hotspot.close[index].isVisible = true;
+                                Hotspot.play[index].isVisible = true;
+                                Hotspot.reset[index].isVisible = true;
+                                this.play = true;
+                                videoTexture.video.play();
+                            
+                    }));
+
+                    // Il y a un bouton close, on crée son trigger
+
+                    Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.play = false;
+                                Hotspot.plan[index].isVisible = false;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.play[index].isVisible = false;
+                                Hotspot.reset[index].isVisible = false;
+                                element.isVisible = true;
+                                videoTexture.video.pause();
+                                videoTexture.video.currentTime = 0;
+                                
+                    }));
+
+                    // Il y a un bouton reset, on crée son trigger
+
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.play = true;
+                                videoTexture.video.currentTime = 0;
+                                videoTexture.video.play();
+                    }));
+
+                    // Il y a une bouton Play/Pause, on crée son trigger
+                    
+                    Hotspot.play[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin)
+                                if(this.play)
+                                {
+                                    videoTexture.video.pause();
+                                }
+                                else
+                                {
+                                    videoTexture.video.play();
+                                }
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.play = !(this.play)
+                                
+                    }));
+
+                }
+
+
+                else if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "info")
+                {
+                    //C'est un hotspot info
+                   
+                    element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin);
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                element.scaling = new BABYLON.Vector3(1,1,1);
+                                element.isVisible = false;
+                                Hotspot.hotspotGUI[index].scaling = new BABYLON.Vector3(2,2,1);
+                                Hotspot.rect[index].isVisible = false;
+                                Hotspot.sv[index].isVisible = true;
+                                Hotspot.rect2[index].isVisible = true;
+                                Hotspot.close[index].isVisible = true;
+                                Hotspot.play[index].isVisible = true;
+                                Hotspot.reset[index].isVisible = true;
+                                Hotspot.accel[index].isVisible = true;
+                                this.timerinterval = setInterval(()=>
+                                {
+                                    if(Hotspot.sv[index].verticalBar.value < 1)
+                                    {
+                                        Hotspot.sv[index].verticalBar.value += this.speed;
+                                    }
+                                    else if (Hotspot.sv[index].verticalBar.value == 1)
+                                    {
+                                        clearInterval(this.timerinterval)
+                                        }
+                                },100)
+                                this.defile = true;
+                               
+                           
+                    }));
+
+
+                     // Il y a un bouton close, on crée son trigger
+
+                Hotspot.close[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin);
+                                clearTimeout(this.timerinterval);
+                                this.out = true;
+                                this.firsTimeIn = true;
+                                this.defile = false;
+                                this.speed = 0.01;
+                                Hotspot.close[index].isVisible = false;
+                                Hotspot.hotspotGUI[index].scaling = new BABYLON.Vector3(1,1,1);
+                                Hotspot.rect2[index].isVisible = false;
+                                Hotspot.play[index].isVisible = false;
+                                Hotspot.reset[index].isVisible = false;
+                                Hotspot.sv[index].isVisible = false;
+                                Hotspot.accel[index].isVisible = false;
+                                Hotspot.sv[index].verticalBar.value = 0;
+                                element.isVisible = true;
+                                
+                    }));
+                Hotspot.play[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin);
+                                if(this.defile)
+                                {
+                                    clearInterval(this.timerinterval)
+                                }
+                                else
+                                {
+                                    this.timerinterval = setInterval(()=>
+                                {
+                                    if(Hotspot.sv[index].verticalBar.value < 1)
+                                    {
+                                        Hotspot.sv[index].verticalBar.value += this.speed;
+                                    }
+                                    else if (Hotspot.sv[index].verticalBar.value == 1)
+                                    {
+                                        clearInterval(this.timerinterval)
+                                        }
+                                },100)
+                                }
+                                this.defile = !(this.defile)
+                               
+                                this.out = true;
+                                this.firsTimeIn = true;
+                               
+                                
+                    }));
+
+                    Hotspot.reset[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin);
+                                clearInterval(this.timerinterval)
+                                Hotspot.sv[index].verticalBar.value = 0;
+                                this.speed = 0.01;
+                                this.timerinterval = setInterval(()=>
+                                {
+                                    if(Hotspot.sv[index].verticalBar.value < 1)
+                                    {
+                                        Hotspot.sv[index].verticalBar.value += this.speed;
+                                    }
+                                    else if (Hotspot.sv[index].verticalBar.value == 1)
+                                    {
+                                        clearInterval(this.timerinterval)
+                                        }
+                                },100)
+                               
+                                this.out = true;
+                                this.firsTimeIn = true;
+                               
+                                
+                    }));
+
+                    Hotspot.accel[index].actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
+                    {
+                                clearTimeout(this.timerin);
+                               this.speed += 0.01;
+                               
+                                this.out = true;
+                                this.firsTimeIn = true;
+                               
+                                
+                    }));
+                }
+
+               
+                
+            })
+
            
-          
-            var observer=scene.onBeforeRenderObservable.add(()=>
-            {
-                var camPos = scene.activeCamera == vrHelper.webVRCamera ? vrHelper.webVRCamera.devicePosition : scene.activeCamera.position
-                var dir1 = planLink.position.subtract(scene.activeCamera.position)
-                var dir1_1 = planGUILink.position.subtract(scene.activeCamera.position)
-                planLink.lookAt(planLink.position.add(dir1))
-                planGUILink.lookAt(planGUILink.position.add(dir1_1))
-            });
-            var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateForMesh(planGUILink);
-            var rect1 = new BABYLON.GUI.Rectangle();
-            rect1.width = 0.8;
-            rect1.height = "200px";
-            rect1.cornerRadius = 90;
-            //rect1.color = "white";  //couleur des bordures du rectangle
-            rect1.thickness = 2; 
-            rect1.background = "purple";
-            advancedTexture.addControl(rect1);
-            var label = new BABYLON.GUI.TextBlock();
-            label.text = "Vers sc1";
-            label.fontSize = "150";
-            label.color = "white";
-            rect1.addControl(label);
-            rect1.top = "-350px";
-            rect1.isVisible = false;
-
-            planLink.actionManager = new BABYLON.ActionManager(scene);
-
-
-            let out = true;
-            var timerin;
-            var timerout;
-            var firstTimeIn = true;
-
-
-            planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger,  () => 
-            {
-                
-                if(!out)
-            {
-               clearTimeout(timerout);  
-            }
-            out = false;
-            
-            
-            if(firstTimeIn)
-            {
-                rect1.isVisible = true;
-                TweenLite.to(planLink.scaling,0.5,{x: 1.5, y:1.5, z: 1})
-                
-            timerin = setTimeout(()=> {
-               
-                scene.onBeforeRenderObservable.remove(observer);
-                
-                 out = null;
-                 timerin = null;
-                 timerout = null;
-                 firstTimeIn = null;
-               
-
-                
-                label.dispose();
-                label = null;
-                rect1.dispose();
-                rect1 = null;
-                advancedTexture.dispose();
-                advancedTexture = null;
-                planGUILink.dispose();
-                planGUILink = null;
-                planLink.actionManager.dispose();
-                planLink.actionManager = null;
-                planLink.dispose();
-                planLink = null;
-                
-
-                
-                
-               dome.dispose();
-               dome = null;
-
-               createPhoto1()
-            }, 3000)
-        }
-            firstTimeIn = false;
-                
         
-            }));
-           planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger,  () => 
+            
+        }
+
+        destruction(Hotspot)
+        {
+            this.out = null;
+            delete this.out;
+            this.display = null;
+            delete this.display;
+            this.defile = null;
+            delete this.defile;
+            this.timerin = null;
+            delete this.timerin;
+            this.timerout = null;
+            delete this.timerout;
+            this.firsTimeIn = null;
+            delete this.firsTimeIn;
+            if(this.timerinterval)  // Défilement du texte info => destruction + clearInterval du timerinterval, Sinon just destruction
             {
-                clearTimeout(timerin);
-                setTimeout(()=>
+                clearInterval(this.timerinterval)
+                
+            }
+            
+            this.timerinterval = null;
+            delete this.timerinterval;
+            for(var i =0;i<Hotspot.n;i++) // Destruction des actionManagers 
+            {
+                Hotspot.hotspot[i].actionManager.dispose();
+                Hotspot.hotspot[i].actionManager = null;
+                if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type != "link") 
                 {
-                    scene.onBeforeRenderObservable.remove(observer);
-                
-                out = null;
-                timerin = null;
-                timerout = null;
-                firstTimeIn = null;
-              
+                    Hotspot.close[i].actionManager.dispose();
 
-               
-               label.dispose();
-               label = null;
-               rect1.dispose();
-               rect1 = null;
-               advancedTexture.dispose();
-               advancedTexture = null;
-               planGUILink.dispose();
-               planGUILink = null;
-               planLink.actionManager.dispose();
-               planLink.actionManager = null;
-               planLink.dispose();
-               planLink = null;
-               
+                    Hotspot.close[i].actionManager = null;
 
-               
-               
-              dome.dispose();
-              dome = null;
+                  
 
-              createPhoto1()
-                },500)
-                
-        
-            }));
-            planLink.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger,  () => 
-            {
-                timerout = setTimeout(()=>{
-                    clearTimeout(timerin);
-                    out = true;
-                firstTimeIn = true;
-                
-                TweenLite.to(planLink.scaling,0.5,{x: 1, y:1, z: 1})
-                setTimeout(()=>{rect1.isVisible = false},200);
-                
-               
-                    },10)
-               
-        
-            }));
+                   if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "music" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info" ) 
+                    {
+                        Hotspot.reset[i].actionManager.dispose();
+                        Hotspot.reset[i].actionManager = null;
+                        if (data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info" )
+                        {
+                            Hotspot.play[i].actionManager.dispose();
+                            Hotspot.play[i].actionManager = null;
 
-        }
-        }
-        /*
-         // Create utility layer the gizmo will be rendered on
-            var utilLayer = new BABYLON.UtilityLayerRenderer(scene);
-         // Create the position gizmo and attach to the sphere
-            var gizmoPosition = new BABYLON.PositionGizmo(utilLayer);
-            gizmoPosition.attachedMesh = planeInfo;
-        // Keep the gizmo fixed to world rotation
-        gizmoPosition.updateGizmoRotationToMatchAttachedMesh = false;
-        gizmoPosition.updateGizmoPositionToMatchAttachedMesh = true;
-        gizmoPosition.onDragEndObservable.add(() => {
-            console.log(planeLink.position)
-        })
-        */
-        var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
-        var scene = createScene();
-
-        engine.runRenderLoop(function () {
-            if (scene) {
-                scene.render();
+                            if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info")
+                            {
+                                Hotspot.accel[i].actionManager.dispose();
+                                Hotspot.accel[i].actionManager = null;
+                            }
+                        }
+                    }
+                }
             }
-        });
 
-        // Resize
-        window.addEventListener("resize", function () {
-            engine.resize();
-        });
+            Hotspot.destructionHotspots(); // On appelle la destruction de tous les Hotspots
+
+            
+            
+            
+        }
+}
+
+
+var createScene = function () {
+    
+    
+    var bis = new Scene(3);
+
+   
+
+	return scene;
+};
+
         
-    </script>
+      
+       var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
+       var scene = createScene();
+       engine.runRenderLoop(function () {
+           if (scene) {
+               scene.render();
+           }
+       });
+       // Resize
+       window.addEventListener("resize", function () {
+           engine.resize();
+       });
+       
+    })
+
+ 
+</script>
+
 </body>
+
 </html>
-
-
