@@ -1005,9 +1005,9 @@ class Trigger
             }
         }
 
-      Target(i,Hotspot)
+      Target(ind,Hotspot)
     {
-        var target = data.Story.scenes[this.p].hotspot[i].eventTarget.id
+        var target = data.Story.scenes[this.p].hotspot[ind].eventTarget.id
         for(var i= 0; i< Hotspot.n; i++)
         {
             if (data.Story.scenes[this.p].id == target)
