@@ -1005,7 +1005,20 @@ class Trigger
             }
         }
 
-      
+      Target(i)
+    {
+        var target = data.Story.scenes[this.p].hotspot[i].eventTarget.id
+        for(var i= 0; i< Hotspot.n; i++)
+        {
+            if (data.Story.scenes[this.p].id == target)
+            {
+                console.log(i);
+                return i;
+            }
+        }
+
+
+    }
 
         CreateTriggerOver(Hotspot)
         {
@@ -1165,8 +1178,8 @@ class Trigger
                                 this.destruction(Hotspot);
                                 
                                 // On récupère l'indice de la prochaine scène
-                                let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
-                                
+                                //let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
+                                let id = Target(index); 
                                 // Création de la nouvelle photo -> création des nouveaux hotspots -> création des triggers
                                 new Photo(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
 
@@ -2104,8 +2117,8 @@ class Trigger
                             setTimeout(()=>
                             {
                                  this.destruction(Hotspot);
-                                let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
-                                
+                                //let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
+                                let id = Target(index); 
                                 new Photo(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
                                 id = null;
                                 this.p = null;
