@@ -250,18 +250,30 @@ class Photo{
         },
         scene
         );
-        console.log(this.dome);
+         BABYLON.Engine.audioEngine.useCustomUnlockedButton = true; // Sur chrome il y a un bouton mute qui s'affiche, et le son est mute directement, cette fonction permet de faire disparaître ce bouton.
+
         // On test si dans le fichier JSON, on a attribué une valeur au fov de la caméra pour cette scène. 
         // Si rien n'est mis dans le JSON alors on ne rentre pas dans la condition
         // valeur par défaut : 0.8. Les valeurs sont en radians.
-       if(data.Story.scenes[id].fov)
-       {
-           camera.fov =  data.Story.scenes[id].fov
-       }
+       
        if(data.Story.scenes[id].playlist.url)
        {
-         this.music  = new BABYLON.Sound("music", data.Story.scenes[id].playlist.url ,
-    scene, null, { loop: data.Story.scenes[id].playlist.loop , autoplay: true, volume: data.Story.scenes[id].playlist.volume   });
+        
+         this.music  = new BABYLON.Sound("music", data.Story.scenes[id].playlist.url , scene, null, { loop: false , autoplay: true, volume: 0.5 });
+        
+            //si on clique sur le canvas
+            canvas.onclick = function()
+            {
+                BABYLON.Engine.audioEngine.unlock(); // permet de unmute le son sur chrome.
+            }
+             //si on clique sur le bouton VR
+            document.getElementById('babylonVRiconbtn').onclick = function()
+            {
+                BABYLON.Engine.audioEngine.unlock(); // permet de unmute le son sur chrome.
+            }
+         
+         
+         
        }
         
     // Création des Hotspots 
@@ -293,6 +305,7 @@ class Hotspots
         
         // nombre de HotSpots dans la scène
         this.n = getNb(data.Story.scenes[id].hotspot);
+        console.log("n: ",this.n);
         // id : n° de la scène
         this.p = id;
        
@@ -313,6 +326,11 @@ class Hotspots
         this.text = new Array(this.n); // contient les différents textes des points info
         this.music = new Array(this.n); // contient les différentes musiques.
         this.accel = new Array(this.n) // contient les boutons accel, qui accélère le défilement du texte du point info.
+        
+        this.matImageDisplay = new Array(this.n);
+        this.matImage = new Array(this.n);
+        this.matVideo = new Array(this.n);
+        this.videoTexture = new Array(this.n);
         this.createHotpots();
         
         this.Photo = Photo;
@@ -356,10 +374,10 @@ class Hotspots
               this.addHyperlink(i);
                
            }
-           else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "music")
+           else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "musique")
            {
                this.addMusic(i);
-               
+              
                
            }
            else if (data.Story.scenes[this.p].hotspot[i].geometry.type == "image")
@@ -420,6 +438,12 @@ class Hotspots
         this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
         this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
         
+
+        this.matVideo[i] = new BABYLON.StandardMaterial("mat", scene);
+            this.videoTexture[i] = new BABYLON.VideoTexture("video", data.Story.scenes[this.p].hotspot[i].event.url, scene, true, false);
+            this.matVideo[i].diffuseTexture = this.videoTexture[i];
+            this.videoTexture[i].video.pause();
+
         // Création du plan où l'on va projeter la vidéo
         this.plan[i] = BABYLON.Mesh.CreatePlane("plane1", 3, scene);
         
@@ -430,11 +454,16 @@ class Hotspots
         
         // Attach the video material to the a mesh
         this.plan[i].scaling.x = 1920/1080; // set aspect ratio
-        this.plan[i].material = matVideo;
+        this.plan[i].material = this.matVideo[i];
         this.plan[i].isVisible = false;
-        videoTexture.video.pause();
-        videoTexture.video.loop = false;
-
+        
+       
+                
+        
+                
+         
+        this.videoTexture[i].video.loop = false;
+       
 
         //Création du bouton close
         this.close[i] = new BABYLON.Mesh.CreatePlane("closeVideo",2,scene);
@@ -561,14 +590,26 @@ class Hotspots
         this.hotspot[i] = new BABYLON.Mesh.CreateDisc("Hyperlink", data.Story.scenes[this.p].hotspot[i].geometry.options.radius, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
         this.hotspot[i].position = new BABYLON.Vector3(data.Story.scenes[this.p].hotspot[i].transform.position.x,data.Story.scenes[this.p].hotspot[i].transform.position.y,data.Story.scenes[this.p].hotspot[i].transform.position.z)
         
-        this.hotspot[i].material = matImage;
+
+        this.matImage[i] = new BABYLON.StandardMaterial(scene);
+            this.matImage[i].diffuseTexture = new BABYLON.Texture(data.Story.scenes[this.p].hotspot[i].event.url,scene,true,false);    
+            this.matImage[i].diffuseTexture.hasAlpha = true;
+            this.matImage[i].backFaceCulling = false;
+
+            this.matImageDisplay[i] = new BABYLON.StandardMaterial( scene);
+            this.matImageDisplay[i].diffuseTexture = new BABYLON.Texture(data.Story.scenes[this.p].hotspot[i].event.url,scene,true,true);    
+            this.matImageDisplay[i].diffuseTexture.hasAlpha = true;
+            this.matImageDisplay[i].backFaceCulling = false;
+
+
+        this.hotspot[i].material = this.matImage[i];
         this.hotspotGUI[i].position = this.hotspot[i].position.add(this.hotspot[i].position.subtract(camera.position).normalize().scale(0.5));
         
         // Création du plan où l'image va être projeté
         this.plan[i] = BABYLON.Mesh.CreatePlane("Image", 4);
         this.plan[i].parent = this.hotspot[i];
         this.plan[i].scaling.x = 1920/1080;
-        this.plan[i].material = matImageDisplay;
+        this.plan[i].material = this.matImageDisplay[i];
         this.plan[i].isVisible = false;
         
         // Création du bouton close
@@ -595,7 +636,7 @@ class Hotspots
         
         // Texte de l'étiquette
         this.label[i] = new BABYLON.GUI.TextBlock();
-        this.label[i].text = "Image";
+        this.label[i].text = data.Story.scenes[this.p].hotspot[i].name;
         this.label[i].fontSize = "150";
         this.label[i].color = "white";
         this.rect[i].addControl(this.label[i]);
@@ -672,7 +713,7 @@ class Hotspots
         
         // Texte étiquette
         this.label[i] = new BABYLON.GUI.TextBlock();
-        this.label[i].text = "Info";
+        this.label[i].text = data.Story.scenes[this.p].hotspot[i].name;
         this.label[i].fontSize = "150"
         this.label[i].color ="white"
         this.rect[i].addControl(this.label[i]);
@@ -706,8 +747,7 @@ class Hotspots
         this.text[i].textVerticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
         this.text[i].color = "white";
         this.text[i].fontFamily = "Arial";
-        this.text[i].text = "The Oriente Station is one of the most important bus and train stations in the city. Designed by the Spanish architect and engineer Santiago Calatrava, it has an enormous metal skeleton that covers the eight train lines and its platforms. Finished in 1998 to serve the Expo’98 and, later, the Parque das Nações area, in its surroundings are companies, services, hotels, bars, animation, as well as the well known Vasco da Gama shopping centre.";
-
+        this.text[i].text = data.Story.scenes[this.p].hotspot[i].event.texte;
         this.text[i].fontSize = "40";
                 
         this.sv[i].addControl(this.text[i]);
@@ -715,7 +755,7 @@ class Hotspots
                 // Création du texte du titre du texte défilant
                 this.label2[i] = new BABYLON.GUI.TextBlock();
                 this.label2[i].textWrapping = BABYLON.GUI.TextWrapping.WordWrap;
-                this.label2[i].text = "Information sur la gare";
+                this.label2[i].text = data.Story.scenes[this.p].hotspot[i].event.title;
                 this.label2[i].height = "100px";
                 this.label2[i].color = "white"
                 this.label2[i].textHorizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_CENTER;
@@ -765,7 +805,7 @@ class Hotspots
             
             // Création du texte de l'étiquette
             this.label[i] = new BABYLON.GUI.TextBlock();
-            this.label[i].text = "Music";
+            this.label[i].text = data.Story.scenes[this.p].hotspot[i].name;
             this.label[i].fontSize = "150";
             this.label[i].color = "white";
             this.rect[i].addControl(this.label[i]);
@@ -792,11 +832,16 @@ class Hotspots
             this.reset[i].scaling.y = 0.40;
             
             this.reset[i].material = matreset;
-
-      
+            
+           
+                
+           
+                 
+          
             // Création de la musique
          this.music[i] = new BABYLON.Sound("music", data.Story.scenes[this.p].hotspot[i].event.url ,
-    scene, null, { loop: data.Story.scenes[this.p].hotspot[i].event.loop , autoplay: false, volume: data.Story.scenes[this.p].hotspot[i].event.volume   });
+    scene, null, { loop: false , autoplay: false, volume: 0.5   });
+       
 }
     Observer()
     {
@@ -858,12 +903,19 @@ class Hotspots
                 {
                     this.reset[i].dispose();
                     
-
+                    
                     this.play[i].dispose();
                     
-                    videoTexture.video.pause();
-                    videoTexture.video.currentTime = 0;
+                    this.videoTexture[i].video.pause();
+                    this.videoTexture[i].video.currentTime = 0;
+                    this.videoTexture[i].dispose();
+                    this.matVideo[i].dispose();
 
+                }
+                else if(data.Story.scenes[this.p].hotspot[i].geometry.type == "image")
+                {
+                    this.matImage[i].dispose();
+                    this.matImageDisplay[i].dispose();
                 }
                 this.close[i].dispose();
                 
@@ -872,8 +924,9 @@ class Hotspots
                 
             }
 
-            else if(data.Story.scenes[this.p].hotspot[i].geometry.type == "music")
+            else if(data.Story.scenes[this.p].hotspot[i].geometry.type == "musique")
             {
+             
                 this.reset[i].dispose();
                 this.close[i].dispose();
                 this.music[i].dispose();
@@ -884,6 +937,18 @@ class Hotspots
 
             this.dirGUI[i] = null;
             delete this.dirGUI[i];
+
+            this.matImage[i] = null;
+            delete this.matImage[i];
+            
+            this.matImageDisplay[i] = null;
+            delete this.matImageDisplay[i];
+
+            this.videoTexture[i] = null;
+            delete this.videoTexture[i];
+
+            this.matVideo[i] = null;
+            delete this.matVideo[i];
 
             this.text[i] = null;
             delete this.text[i];
@@ -922,6 +987,8 @@ class Hotspots
             this.rect[i].dispose();
             this.rect[i] = null;
             delete this.rect[i];
+
+           
 
             this.advancedTexture[i].dispose();
             this.advancedTexture[i] = null;
@@ -975,6 +1042,8 @@ class Trigger
         
         return this;
     }
+
+    
     CreateActionManager(Hotspot)
         {
             // On crée tous les ActionManagers nécessaires, en fonction du type d'hotspot, il peut y en avoir 1,2,3,4
@@ -988,15 +1057,21 @@ class Trigger
 
                   
 
-                     if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "music" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info"  ) 
+                     if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "musique" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info"  ) 
                     {
                         Hotspot.reset[i].actionManager = new BABYLON.ActionManager(scene);
                         if (data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info" )
                         {
                             Hotspot.play[i].actionManager = new BABYLON.ActionManager(scene);
+                            
+                            
                             if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info")
                             {
                                 Hotspot.accel[i].actionManager = new BABYLON.ActionManager(scene);
+                            }
+                            else
+                            {
+                                Hotspot.plan[i].actionManager = new BABYLON.ActionManager(scene);
                             }
                         }
                     }
@@ -1005,21 +1080,7 @@ class Trigger
             }
         }
 
-      Target(ind,Hotspot)
-    {
-        var target = data.Story.scenes[this.p].hotspot[ind].eventTarget.id
-        for(var i= 0; i< Hotspot.n; i++)
-        {
-		console.log(i);
-            if (data.Story.scenes[this.p].id == target)
-            {
-                console.log("trouvé: ",i);
-                
-            }
-        }
-
-
-    }
+      
 
         CreateTriggerOver(Hotspot)
         {
@@ -1029,7 +1090,7 @@ class Trigger
                 // On regarde tous les hotspots de la scène.
                 // element : Hotspot.hotspot[index]
                 // index : indice de l'élément
-                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "music")
+                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "musique")
                 {
                     //C'est un hotspot music
                     element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOverTrigger, ()=>
@@ -1179,8 +1240,8 @@ class Trigger
                                 this.destruction(Hotspot);
                                 
                                 // On récupère l'indice de la prochaine scène
-                                //let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
-                                let id = this.Target(index,Hotspot); 
+                               
+                                 let id = Target(index,this.p); 
                                 // Création de la nouvelle photo -> création des nouveaux hotspots -> création des triggers
                                 new Photo(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
 
@@ -1290,12 +1351,7 @@ class Trigger
                         // Est-ce la première fois qu'on rentre en contact avec l'objet
                         if(this.firsTimeIn)
                         {
-                            // On affiche l'étiquette
-                            // Si on a déjà sélectionné le hotspot, alors on n'affiche pas de nouveau l'étiquette
-                            if(Hotspot.rect2[index].isVisible != true)
-                            {
-                                Hotspot.rect[index].isVisible = true;
-                            }
+                            Hotspot.rect[index].isVisible = true;
                             TweenLite.to(element.scaling,0.5,{x:1.5,y:1.5});
                             // Code qui va s'exécuter au bout de 2 sec (pour le gaze de la VR)
                             this.timerin = setTimeout(()=>
@@ -1303,7 +1359,7 @@ class Trigger
                                 this.out = true;
                                 this.firsTimeIn = true;
                                 Hotspot.rect[index].isVisible = false;
-                                element.isVisible=false;
+                               
                                 Hotspot.rect2[index].isVisible = true;
                                 Hotspot.close[index].isVisible = true;
 
@@ -1399,7 +1455,7 @@ class Trigger
                                 Hotspot.close[index].isVisible = true;
                                 Hotspot.play[index].isVisible = true;
                                 Hotspot.reset[index].isVisible = true;
-                                videoTexture.video.play();
+                                Hotspot.videoTexture[index].video.play();
                                 this.play = true;
                             },2000)
                         }
@@ -1434,8 +1490,8 @@ class Trigger
                                 Hotspot.play[index].isVisible = false;
                                 Hotspot.reset[index].isVisible = false;
                                 element.isVisible = true;
-                                videoTexture.video.pause();
-                                videoTexture.video.currentTime = 0;
+                                Hotspot.videoTexture[index].video.pause();
+                                Hotspot.videoTexture[index].video.currentTime = 0;
                             },2000)
                         }
                         
@@ -1465,8 +1521,8 @@ class Trigger
                                 this.out = true;
                                 this.firsTimeIn = true;
                                 this.play = true;
-                                videoTexture.video.currentTime = 0;
-                                videoTexture.video.play();
+                                Hotspot.videoTexture[index].video.currentTime = 0;
+                                Hotspot.videoTexture[index].video.play();
                             },2000)
                         }
                         
@@ -1495,11 +1551,11 @@ class Trigger
                             {
                                 if(this.play)
                                 {
-                                    videoTexture.video.pause();
+                                    Hotspot.videoTexture[index].video.pause();
                                 }
                                 else
                                 {
-                                    videoTexture.video.play();
+                                    Hotspot.videoTexture[index].video.play();
                                 }
                                 this.out = true;
                                 this.firsTimeIn = true;
@@ -1585,7 +1641,7 @@ class Trigger
                             {
                                 this.out = true;
                                 this.firsTimeIn = true;
-                                this.speed = 0.01;
+                                this.speed = 0;
                                 clearInterval(this.timerinterval)
                                 Hotspot.close[index].isVisible = false;
                                 Hotspot.play[index].isVisible = false;
@@ -1732,7 +1788,7 @@ class Trigger
         {
             Hotspot.hotspot.forEach((element,index) =>
             {
-                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "music")
+                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "musique")
                 {
                     //C'est un hotspot music
                     element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPointerOutTrigger, ()=>
@@ -2054,7 +2110,7 @@ class Trigger
                 // On regarde tous les hotspots de la scène.
                 // element : Hotspot.hotspot[index]
                 // index : indice de l'élément
-                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "music")
+                if(data.Story.scenes[Hotspot.p].hotspot[index].geometry.type == "musique")
                 {
                     //C'est un hotspot music
                     element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
@@ -2115,12 +2171,15 @@ class Trigger
                     element.actionManager.registerAction(new BABYLON.ExecuteCodeAction(BABYLON.ActionManager.OnPickUpTrigger, ()=>
                     {
                             clearTimeout(this.timerin);
+                            clearTimeout(this.timerout)
                             setTimeout(()=>
                             {
                                  this.destruction(Hotspot);
-                                //let id = data.Story.scenes[this.p].hotspot[index].eventTarget.id;
-                                let id = this.Target(index,Hotspot); 
-                               // new Photo(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
+                               
+                                
+                                let id = Target(index,this.p);
+                                
+                                new Photo(data.Story.scenes[id].dom.name,data.Story.scenes[id].dom.url,id);
                                 id = null;
                                 this.p = null;
                                 delete this.p;
@@ -2229,7 +2288,7 @@ class Trigger
                                 Hotspot.play[index].isVisible = true;
                                 Hotspot.reset[index].isVisible = true;
                                 this.play = true;
-                                videoTexture.video.play();
+                                Hotspot.videoTexture[index].video.play();
                             
                     }));
 
@@ -2246,10 +2305,12 @@ class Trigger
                                 Hotspot.play[index].isVisible = false;
                                 Hotspot.reset[index].isVisible = false;
                                 element.isVisible = true;
-                                videoTexture.video.pause();
-                                videoTexture.video.currentTime = 0;
+                                Hotspot.videoTexture[index].video.pause();
+                                Hotspot.videoTexture[index].video.currentTime = 0;
                                 
                     }));
+
+                   
 
                     // Il y a un bouton reset, on crée son trigger
 
@@ -2259,8 +2320,8 @@ class Trigger
                                 this.out = true;
                                 this.firsTimeIn = true;
                                 this.play = true;
-                                videoTexture.video.currentTime = 0;
-                                videoTexture.video.play();
+                                Hotspot.videoTexture[index].video.currentTime = 0;
+                                Hotspot.videoTexture[index].video.play();
                     }));
 
                     // Il y a une bouton Play/Pause, on crée son trigger
@@ -2270,11 +2331,11 @@ class Trigger
                                 clearTimeout(this.timerin)
                                 if(this.play)
                                 {
-                                    videoTexture.video.pause();
+                                    Hotspot.videoTexture[index].video.pause();
                                 }
                                 else
                                 {
-                                    videoTexture.video.play();
+                                    Hotspot.videoTexture[index].video.play();
                                 }
                                 this.out = true;
                                 this.firsTimeIn = true;
@@ -2450,7 +2511,7 @@ class Trigger
 
                   
 
-                   if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "music" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info" ) 
+                   if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "video" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "musique" || data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info" ) 
                     {
                         Hotspot.reset[i].actionManager.dispose();
                         Hotspot.reset[i].actionManager = null;
@@ -2459,10 +2520,18 @@ class Trigger
                             Hotspot.play[i].actionManager.dispose();
                             Hotspot.play[i].actionManager = null;
 
+                            
+
                             if(data.Story.scenes[Hotspot.p].hotspot[i].geometry.type == "info")
                             {
                                 Hotspot.accel[i].actionManager.dispose();
                                 Hotspot.accel[i].actionManager = null;
+                            }
+
+                            else
+                            {
+                                Hotspot.plan[i].actionManager.dispose();
+                            Hotspot.plan[i].actionManager = null;
                             }
                         }
                     }
@@ -2476,6 +2545,7 @@ class Trigger
             
         }
 }
+
 
 
 var createScene = function () {
@@ -2492,6 +2562,7 @@ var createScene = function () {
       
        var engine = new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true });
        var scene = createScene();
+       
        engine.runRenderLoop(function () {
            if (scene) {
                scene.render();
@@ -2501,11 +2572,9 @@ var createScene = function () {
        window.addEventListener("resize", function () {
            engine.resize();
        });
-       
-    })
+     
+    </script>
 
- 
-</script>
 
 </body>
 
