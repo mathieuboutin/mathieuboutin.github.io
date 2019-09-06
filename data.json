@@ -1,148 +1,41 @@
 {
   "Story": {
-    "id": "demo",
-    "name": "demo",
+    "id": "scenario_97",
+    "name": "test",
     "scenes": [
       {
-        "id": 0,
-        "name": "scene1",
+        "id": "scene_297",
+        "name": "sc1",
         "fov": "",
         "playlist": {
-          "url": "",
           "loop": "",
+          "url": "",
           "volume": ""
         },
         "dom": {
-          "id": "scene1",
-          "name": "scene1",
+          "id": "scene_297",
+          "name": "scene_297",
           "url": "./img/image1.jpg"
         },
         "hotspot": [
           {
-            "id": 0,
-            "name": "hyperlink",
-            "transform": {
-              "position": {
-                "x": -7.21516768075967,
-                "y": 0,
-                "z": -14.081954471594145
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "geometry": {
-              "type": "hyperlink",
-              "options": {
-                "size": 3,
-                "radius": 0.5
-              }
-            },
-            "event": {
-              "url": "https://www.google.fr/",
-              "name": "Google"
-            }
-          },
-          {
-            "id": 1,
-            "name": "vers Sc2",
-            "transform": {
-              "position": {
-                "x": -7.856177494195498,
-                "y": -7.575172191173865e-26,
-                "z": -11.002394108127689
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "geometry": {
-              "type": "link",
-              "options": {
-                "size": 3,
-                "radius": 0.5
-              }
-            },
-            "eventTarget": {
-              "id": 1
-            }
-          },
-          {
-            "id": 2,
-            "name": "Video",
-            "transform": {
-              "position": {
-                "x": -11.686181615057734,
-                "y": 0,
-                "z": -3.300905990659318
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "geometry": {
-              "type": "video",
-              "options": {
-                "size": 3,
-                "radius": 0.5
-              }
-            },
-            "event": {
-              "url": "./img/pub.mp4"
-            }
-          },
-          {
-            "id": 3,
-            "name": "Image",
-            "transform": {
-              "position": {
-                "x": -12.377351007646315,
-                "y": -1.4211785528481757e-24,
-                "z": -9.052478645879221
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
+            "id": "hotspot_322",
+            "name": "chat",
             "geometry": {
               "type": "image",
               "options": {
                 "size": 3,
                 "radius": 0.5
               }
-            }
-          }
-        ]
-      },
-      {
-        "id": 1,
-        "name": "scene2",
-        "fov": "",
-        "playlist": {
-          "url": "./img/sncf.mp3",
-          "loop": false,
-          "volume": 0.5
-        },
-        "dom": {
-          "id": "scene2",
-          "name": "scene2",
-          "url": "./img/image2.jpg"
-        },
-        "hotspot": [
-          {
-            "id": 0,
-            "name": "Vers Sc3",
+            },
             "transform": {
               "position": {
-                "x": -1.6981479046085077,
+                "x": -5.8669505754835,
+                "y": 0,
+                "z": -0.03808
+              },
+              "rotation": {
+                "x": 0,
                 "y": 0,
                 "z": 0
               },
@@ -152,6 +45,111 @@
                 "z": 1
               }
             },
+            "event": {
+              "url": "./img/chat2.jpg"
+            }
+          },
+          {
+            "id": "hotspot_321",
+            "name": "Vidéo",
+            "geometry": {
+              "type": "video",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "transform": {
+              "position": {
+                "x": -9.2283513436013,
+                "y": 0,
+                "z": -1.39758
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "event": {
+              "url": "./img/pub.mp4",
+              "loop": "false",
+              "volume": "0.5"
+            }
+          },
+          {
+            "id": "hotspot_305",
+            "name": "hyperlink",
+            "geometry": {
+              "type": "hyperlink",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "transform": {
+              "position": {
+                "x": -6.6093789434767,
+                "y": 0,
+                "z": -11.49304
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "event": {
+              "url": "https://google.fr",
+              "name": "google"
+            }
+          },
+          {
+            "id": "hotspot_301",
+            "name": "test",
+            "geometry": {
+              "type": "musique",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "transform": {
+              "position": {
+                "x": -9.9724790418596,
+                "y": 0,
+                "z": -5.25324
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "event": {
+              "url": "./img/JINGLE MUSIQUE.mp3",
+              "loop": "false",
+              "volume": "0.5"
+            }
+          },
+          {
+            "id": "hotspot_309",
+            "name": "vers Sc2",
             "geometry": {
               "type": "link",
               "options": {
@@ -159,65 +157,95 @@
                 "radius": 0.5
               }
             },
+            "transform": {
+              "position": {
+                "x": -6.171887929478,
+                "y": 0,
+                "z": -7.30925
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
             "eventTarget": {
-              "id": 2
+              "id": "scene_306"
             }
           }
         ]
       },
       {
-        "id": 2,
-        "name": "scene3",
+        "id": "scene_306",
+        "name": "sc2",
         "fov": "",
         "playlist": {
-          "url": "",
           "loop": "",
+          "url": "",
           "volume": ""
         },
         "dom": {
-          "id": "scene3",
-          "name": "scene3",
+          "id": "scene_306",
+          "name": "scene_306",
+          "url": "./img/image2.jpg"
+        },
+        "hotspot": [
+          {
+            "id": "hotspot_323",
+            "name": "vers sc3",
+            "geometry": {
+              "type": "link",
+              "options": {
+                "size": 3,
+                "radius": 0.5
+              }
+            },
+            "transform": {
+              "position": {
+                "x": 0,
+                "y": 0,
+                "z": 5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
+              },
+              "scale": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+              }
+            },
+            "eventTarget": {
+              "id": "scene_310"
+            }
+          }
+        ]
+      },
+      {
+        "id": "scene_310",
+        "name": "sc3",
+        "fov": "",
+        "playlist": {
+          "loop": "false",
+          "url": "./img/JINGLE MUSIQUE.mp3",
+          "volume": "0.5"
+        },
+        "dom": {
+          "id": "scene_310",
+          "name": "scene_310",
           "url": "./img/image3.jpg"
         },
         "hotspot": [
           {
-            "id": 0,
-            "name": "Info",
-            "transform": {
-              "position": {
-                "x": 1.9047572433093785,
-                "y": 0,
-                "z": 2.995645484969945
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "geometry": {
-              "type": "info",
-              "options": {
-                "size": 3,
-                "radius": 0.5
-              }
-            }
-          },
-          {
-            "id": 1,
-            "name": "Vers Sc4",
-            "transform": {
-              "position": {
-                "x": 7.892592315735419,
-                "y": 0,
-                "z": -5.816237354590933
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
+            "id": "hotspot_325",
+            "name": "vers sc1",
             "geometry": {
               "type": "link",
               "options": {
@@ -225,35 +253,16 @@
                 "radius": 0.5
               }
             },
-            "eventTarget": {
-              "id": 3
-            }
-          }
-        ]
-      },
-      {
-        "id": "scene4",
-        "name": "scene4",
-        "fov": "",
-        "playlist": {
-          "url": "",
-          "loop": "",
-          "volume": ""
-        },
-        "dom": {
-          "id": "scene4",
-          "name": "scene4",
-          "url": "./img/image4.jpg"
-        },
-        "hotspot": [
-          {
-            "id": 0,
-            "name": "Vers Sc1",
             "transform": {
               "position": {
-                "x": 9.892592315735419,
+                "x": 0,
                 "y": 0,
-                "z": -4.816237354590933
+                "z": 5
+              },
+              "rotation": {
+                "x": 0,
+                "y": 0,
+                "z": 0
               },
               "scale": {
                 "x": 1,
@@ -261,43 +270,8 @@
                 "z": 1
               }
             },
-            "geometry": {
-              "type": "link",
-              "options": {
-                "size": 3,
-                "radius": 0.5
-              }
-            },
             "eventTarget": {
-              "id": 0
-            }
-          },
-          {
-            "id": 1,
-            "name": "Music",
-            "transform": {
-              "position": {
-                "x": -9.892592315735419,
-                "y": 0,
-                "z": -4.816237354590933
-              },
-              "scale": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-              }
-            },
-            "geometry": {
-              "type": "music",
-              "options": {
-                "size": 3,
-                "radius": 0.5
-              }
-            },
-            "event": {
-              "url": "./img/sncf.mp3",
-              "volume": 0.5,
-              "loop": false
+              "id": "scene_297"
             }
           }
         ]
