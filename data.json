@@ -94,7 +94,7 @@
               }
             },
             "event": {
-              "url": "img/pub.mp4"
+              "url": "./img/pub.mp4"
             }
           },
           {
@@ -127,7 +127,7 @@
         "name": "scene2",
         "fov": "",
         "playlist": {
-          "url": "./musique/sncf.mp3",
+          "url": "./img/sncf.mp3",
           "loop": false,
           "volume": 0.5
         },
@@ -295,7 +295,7 @@
               }
             },
             "event": {
-              "url": "./musique/sncf.mp3",
+              "url": "./img/sncf.mp3",
               "volume": 0.5,
               "loop": false
             }
