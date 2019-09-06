@@ -77,6 +77,30 @@
         return console.error(chemin," n'est pas un tableau");
     }
 }
+    
+    // fonction pour retrouver la scène visée par le hotspot Link  si ind et j sont définies
+    // fonction pour retrouver la scène principale s'il n'y pas d'arguments dans l'appel de la fonction
+    var Target = function(ind,j)
+    {
+        let nbScene = getNb(data.Story.scenes);
+       
+       
+        var target = data.Story.scenes[j].hotspot[ind].eventTarget.id;
+    
+        
+        
+        for(var i= 0; i< nbScene ; i++)
+        {
+            
+            if (data.Story.scenes[i].id == target)
+            {
+                
+                return i;
+            }
+        }
+
+
+    };
     ajaxGet("./data.json", (reponse)=> {
 
         var data = JSON.parse(reponse);
