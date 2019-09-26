@@ -94,6 +94,11 @@ var createScene = function () {
 	   hotspot.position = new BABYLON.Vector3(0,0,0);
 	
 	   hotspot.material = matLink;
+	var gizmoManager = new BABYLON.GizmoManager(scene);
+	gizmoManager.attachableMeshes = [hotspot];
+		gizmoManager.attachToMesh(hotspot);
+	gizmoManager.positionGizmoEnabled=true;
+	gizmoManager.rotationGizmoEnabled = false;
 	return scene;
 };
 
