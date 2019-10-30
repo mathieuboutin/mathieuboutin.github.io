@@ -72,6 +72,7 @@ var createScene = function () {
     var scene = new BABYLON.Scene(engine);
     var camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3 (0,0,-5), scene)
     camera.attachControl(canvas, true);
+	var vrHelper = scene.createDefaultVRExprience();
    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
    light.intensity = 1.5;
 	var dome = new BABYLON.PhotoDome(
