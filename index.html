@@ -51,7 +51,7 @@
      
 
    
-   <script  src="data.json"></script>
+   <!--<script  src="data.json"></script> -->
 <!--    <script  src="TweenLite.js"></script> -->
    <script src="./ajax.js"></script>
    <canvas id="renderCanvas"></canvas>
@@ -60,7 +60,312 @@
     var canvas = document.getElementById("renderCanvas");
    
     
-     
+     // Cette classe va stocker la caméra, la lumière, les matériaux, la VR ainsi que l'objet scene.
+
+class Scene{
+
+constructor(id,scene,download)
+{
+
+   this.id = id;
+   this.scene = scene;
+  
+this.download = download;
+ // création de la caméra + caméra VR
+ 
+
+this.createCamera();
+//this.createCameraVR();
+this.vrHelper = this.scene.createDefaultVRExperience();
+   
+   // Fonction qui permet de zoomer sur le canvas avec la molette
+  //this.zoom(scene);
+ // Initialisation des matériaux
+ 
+//this.createMateriaux();
+   
+   // On ajoute les photos dans le cache afin de charger plus rapidement les photos entre les scènes
+ //  this.preLoadingPhoto();
+
+  // Création de la lumière
+  this.light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), this.scene);
+  this.light.intensity = 1.5;
+  
+  // Création de la photo 
+
+this.createPhoto("test","./img/image1.jpg");
+// On récupère l'objet Scene actuel pour la fonction goToScene
+
+
+ //SceneBis=this;
+  return this;
+}
+
+
+
+
+
+
+createPhoto(name,url)
+{    
+  // Création de la photo 
+    new Photo(name,url,this.id,this.scene,this);
+}
+
+
+
+createCamera(i)
+{
+  // Construit la caméra associée à la scene
+  camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3 (0,0,-5), this.scene)
+ 
+  camera.attachControl(canvas, true);
+ 
+  
+  
+}
+createCameraVR()
+{
+   //Construit la VR associé à la scène
+    this.vrHelper = this.scene.createDefaultVRExperience();
+   this.vrHelper.displayGaze = true ;
+   this.vrHelper.displayLaserPointer = true;
+
+  
+   
+   // On autorise les intéractions avec le "gaze"
+   this.vrHelper.enableInteractions();
+   this.vrHelper.onEnteringVR.add(()=> {
+       setTimeout(()=>{this.scene.getEngine().isPointerLock = true},1000);
+   })
+   
+   this.vrHelper.onExitingVR.add( ()=> {
+       this.scene.getEngine().isPointerLock = false;
+       
+      
+   })
+   var box = BABYLON.Mesh.CreateSphere("t",62,0.01,this.scene)
+   var greenMat = new BABYLON.StandardMaterial("greenMat", this.scene);
+  this.scene.onBeforeRenderObservable.add(()=>{
+      
+greenMat.diffuseColor = new BABYLON.Color3(0.02, 0.41, 0.99);
+
+greenMat.emissiveColor =new BABYLON.Color3(0.02, 0.41, 0.99);
+
+
+  });
+  greenMat.alpha = 1;
+   box.material = greenMat;
+   this.vrHelper.gazeTrackerMesh = box;
+}
+
+
+
+createMateriaux()
+{
+   // explications avec exemple des matériaux sur babylonJS : https://doc.babylonjs.com/babylon101/materials
+   // Doc avec toutes les fonctions : https://doc.babylonjs.com/api/classes/babylon.standardmaterial
+	if(this.download == false)
+	{
+	   this.matLink = new BABYLON.StandardMaterial("Link", this.scene);
+	   this.matLink.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/link.png",this.scene,true,false);
+	   this.matLink.diffuseTexture.hasAlpha = true;
+	   this.matLink.backFaceCulling = false;
+	   
+	   this.matMusic = new BABYLON.StandardMaterial("music", this.scene);
+	   this.matMusic.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/Musique.png", this.scene,true, false);
+	   this.matMusic.diffuseTexture.hasAlpha = true;
+	
+	   this.matInfo = new BABYLON.StandardMaterial( "info",this.scene);
+	      this.matInfo.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/info2.svg",this.scene,true,false);    
+	      this.matInfo.diffuseTexture.hasAlpha = true;
+	      this.matInfo.backFaceCulling = false;
+	
+	      this.matHyperLink = new BABYLON.StandardMaterial( "hyperlink",this.scene);
+	      this.matHyperLink.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/circle_blue.png",this.scene,true,false);     
+	      this.matHyperLink.diffuseTexture.hasAlpha = true;
+	      this.matHyperLink.backFaceCulling = false;
+	      
+	      this.matIconeVideo = new BABYLON.StandardMaterial( this.scene);
+	     this.matIconeVideo.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/Video.png",this.scene,true,false);    
+	      this.matIconeVideo.diffuseTexture.hasAlpha = true;
+	      this.matIconeVideo.backFaceCulling = false;
+	
+	      this.matAccel = new BABYLON.StandardMaterial("accel", this.scene);
+	       this.matAccel.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/accelerer.png",scene,true,false);
+	       this.matAccel.diffuseTexture.hasAlpha = true;
+	       this.matAccel.backFaceCulling = false;
+	
+	       this.matClose = new BABYLON.StandardMaterial("close", this.scene);
+	       this.matClose.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/close.png", scene, true,false);
+	       this.matClose.diffuseTexture.hasAlpha = true;
+	
+	       this.matreset = new BABYLON.StandardMaterial("reset", this.scene);
+	       this.matreset.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/resetBlue.png", scene, true, false);
+	       this.matreset.diffuseTexture.hasAlpha = true;
+	
+	       this.matplayPause = new BABYLON.StandardMaterial("playPause", this.scene);
+	       this.matplayPause.diffuseTexture = new BABYLON.Texture("/public/img/common/viewer/playPause.png", scene);
+	       this.matplayPause.diffuseTexture.hasAlpha = true;
+	}else
+		{
+		this.matLink = new BABYLON.StandardMaterial("Link", this.scene);
+		   this.matLink.diffuseTexture = new BABYLON.Texture("img/link.png",this.scene,true,false);
+		   this.matLink.diffuseTexture.hasAlpha = true;
+		   this.matLink.backFaceCulling = false;
+		   
+		   this.matMusic = new BABYLON.StandardMaterial("music", this.scene);
+		   this.matMusic.diffuseTexture = new BABYLON.Texture("img/Musique.png", this.scene,true, false);
+		   this.matMusic.diffuseTexture.hasAlpha = true;
+		
+		   this.matInfo = new BABYLON.StandardMaterial( "info",this.scene);
+		      this.matInfo.diffuseTexture = new BABYLON.Texture("img/info2.svg",this.scene,true,false);    
+		      this.matInfo.diffuseTexture.hasAlpha = true;
+		      this.matInfo.backFaceCulling = false;
+		
+		      this.matHyperLink = new BABYLON.StandardMaterial( "hyperlink",this.scene);
+		      this.matHyperLink.diffuseTexture = new BABYLON.Texture("img/circle_blue.png",this.scene,true,false);     
+		      this.matHyperLink.diffuseTexture.hasAlpha = true;
+		      this.matHyperLink.backFaceCulling = false;
+		      
+		      this.matIconeVideo = new BABYLON.StandardMaterial( this.scene);
+		     this.matIconeVideo.diffuseTexture = new BABYLON.Texture("img/Video.png",this.scene,true,false);    
+		      this.matIconeVideo.diffuseTexture.hasAlpha = true;
+		      this.matIconeVideo.backFaceCulling = false;
+		
+		      this.matAccel = new BABYLON.StandardMaterial("accel", this.scene);
+		       this.matAccel.diffuseTexture = new BABYLON.Texture("img/accelerer.png",scene,true,false);
+		       this.matAccel.diffuseTexture.hasAlpha = true;
+		       this.matAccel.backFaceCulling = false;
+		
+		       this.matClose = new BABYLON.StandardMaterial("close", this.scene);
+		       this.matClose.diffuseTexture = new BABYLON.Texture("img/close.png", scene, true,false);
+		       this.matClose.diffuseTexture.hasAlpha = true;
+		
+		       this.matreset = new BABYLON.StandardMaterial("reset", this.scene);
+		       this.matreset.diffuseTexture = new BABYLON.Texture("img/resetBlue.png", scene, true, false);
+		       this.matreset.diffuseTexture.hasAlpha = true;
+		
+		       this.matplayPause = new BABYLON.StandardMaterial("playPause", this.scene);
+		       this.matplayPause.diffuseTexture = new BABYLON.Texture("img/playPause.png", scene);
+		       this.matplayPause.diffuseTexture.hasAlpha = true;
+		}
+
+
+       
+}
+
+
+preLoadingPhoto()
+{
+   let n = getNb(data.Story.scenes)
+   
+   // On va créé une première fois chaque dome puis le détruire => avoir les photos dans le cache 
+   //                                                           => chargement entre les scènes plus rapides
+   for (var i=0; i<n; i++)
+   {
+       let dome = new BABYLON.PhotoDome(
+           data.Story.scenes[i].dom.name,
+           data.Story.scenes[i].dom.url,
+           {
+               resolution: 32,
+               size: 1000,
+               faceForward: false
+           },
+           this.scene
+       )
+       dome.dispose();
+       dome = null;
+   }
+}
+
+}	
+
+
+
+// Cette classe va contenir le dome (photo 360°)
+
+class Photo{
+constructor(name,url,id,scene,Scene)
+{
+   this.scene = scene;
+   this.name = name;
+   this.url = url;
+   this.id = id;
+   this.Scene = Scene;
+   CurrentScene = id;
+   
+  this.dome = new BABYLON.PhotoDome(
+      this.name,
+      this.url,
+  {
+      resolution: 32,
+      size: 1000,
+      faceForward: false
+  },
+  this.scene
+  );
+ // BABYLON.Engine.audioEngine.useCustomUnlockedButton = true; // Sur chrome il y a un bouton mute qui s'affiche, et le son est mute directement, cette fonction permet de faire disparaître ce bouton.
+ 
+ // On récupère l'id de la scène surlaquelle on se situe. Nécessaire pour se situer sur un plan
+/*  idScene = data.Story.scenes[this.id].id;
+  lookAtCam(this.id);   
+  this.scene.onReadyObservable.add(()=>{console.log("coucou")})
+
+  // Existe-t-il une musique de fond?
+  if(data.Story.scenes[this.id].playlist.url)
+  {
+   
+    this.music  = new BABYLON.Sound("music", data.Story.scenes[id].playlist.url , this.scene, null, { loop: false , autoplay: true, volume: 0.5 });
+   
+       //si on clique sur le canvas
+       canvas.onclick = function()
+       {
+           BABYLON.Engine.audioEngine.unlock(); // permet de unmute le son sur chrome.
+       }
+        //si on clique sur le bouton VR
+       document.getElementById('babylonVRiconbtn').onclick = function()
+       {
+           BABYLON.Engine.audioEngine.unlock(); // permet de unmute le son sur chrome.
+       }
+    
+    
+    
+  }
+
+ // Il y a déjà des hotspots existants dans la scène
+ if(data.Story.scenes[this.id].hotspot)
+ {
+   // Création des Hotspots 
+   this.createHotspot();
+ }
+
+ PhotoBis = this;*/
+
+  return this;
+
+}
+
+createHotspot()
+{
+   HotObj = new Hotspots(this.id,this.scene,this,this.Scene);
+}
+
+destructionPhoto()
+{
+   if(this.music)
+   {
+       this.music.dispose();
+       this.music = null;
+       delete this.music;
+   }
+   this.dome.dispose();
+   this.dome = null;
+   delete this.dome;
+   delete this;
+}
+
+}
 
 
    
@@ -70,36 +375,7 @@ var createScene = function () {
     
     
     var scene = new BABYLON.Scene(engine);
-    var camera = new BABYLON.FreeCamera("Camera", new BABYLON.Vector3 (0,0,-5), scene)
-    camera.attachControl(canvas, true);
-	var vrHelper = scene.createDefaultVRExperience();
-   var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
-   light.intensity = 1.5;
-	var dome = new BABYLON.PhotoDome(
-		   "test",
-		   "./img/image1.jpg",
-	   {
-		   resolution: 32,
-		   size: 1000,
-		   faceForward: false
-	   },
-	   scene
-	   );
-	var matLink = new BABYLON.StandardMaterial( scene);
-		   matLink.diffuseTexture = new BABYLON.Texture("./icon/link.png",scene,true,false);
-		   matLink.diffuseTexture.hasAlpha = true;
-		   matLink.backFaceCulling = false;
-	var hotspot = new BABYLON.Mesh.CreateDisc("test", 0.5, 60, scene, false, BABYLON.Mesh.DOUBLESIDE )
-	   
-	   // Position des meshes
-	   hotspot.position = new BABYLON.Vector3(0,0,0);
-	
-	   hotspot.material = matLink;
-	var gizmoManager = new BABYLON.GizmoManager(scene);
-	gizmoManager.attachableMeshes = [hotspot];
-		gizmoManager.attachToMesh(hotspot);
-	gizmoManager.positionGizmoEnabled=true;
-	gizmoManager.rotationGizmoEnabled = false;
+   var render = new Scene(0,scene,false)
 	return scene;
 };
 
